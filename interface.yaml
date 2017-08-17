@@ -1,0 +1,353 @@
+swagger: "2.0"
+info:
+  description: "针对时序数据异常标注工具的接口"
+  version: "0.1.0"
+  title: "标注工具接口"
+  contact:
+    email: "licong08@baidu.com"
+  # license:
+  #   name: "Apache 2.0"
+  #   url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "cp01-oda1.epc:8081"
+basePath: "/v1"
+tags:
+  - name: "data"
+    description: "数据管理"
+  - name: "label"
+    description: "数据标注"
+schemes:
+  - "http"
+produces:
+  - application/json
+paths:
+  /datas:
+    get:
+      tags:
+        - "data"
+      summary: "获取数据列表"
+      description: "用来展示已经加载到工具中的数据，当前主要展示的字段为数据的名称，后续需要包含数据的 meta 信息"
+      parameters:
+        - name: pattern
+          in: query
+          description: "数据名称匹配规则"
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                xml:
+                  name: data
+                  wrapped: true
+                items:
+                  $ref: "#/definitions/Meta"
+              msg:
+                type: string
+              server:
+                type: string
+              traceId:
+                type: string
+  /data/{dataName}:
+    post:
+      tags:
+        - "data"
+      summary: "上传数据"
+      description: "用来将数据上传到工具进行加载，上传后会进行 meta 数据计算"
+      consumes:
+        - multipart/form-data
+      parameters:
+        - $ref: "#/parameters/dataName"
+        - name: file
+          in: formData
+          description: "原始数据文件"
+          required: true
+          type: file
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Response"
+    get:
+      tags:
+        - "data"
+      summary: "下载数据"
+      description: "用来从工具中导出已标注的数据，当前数据格式与上传的数据相同"
+      parameters:
+        - $ref: "#/parameters/dataName"
+      produces:
+        - multipart/form-data
+      responses:
+        200:
+          description: OK
+          schema:
+            type: file
+  /data/{dataName}/line:
+    get:
+      tags:
+        - "label"
+      summary: "获取原始数据"
+      description: "用来获取原始数据和标注的曲线，主要是指定时间窗口内的数据"
+      parameters:
+        - $ref: "#/parameters/dataName"
+        - $ref: "#/parameters/startTime"
+        - $ref: "#/parameters/endTime"
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                $ref: "#/definitions/Line"
+              msg:
+                type: string
+              server:
+                type: string
+              traceId:
+                type: string
+  /data/{dataName}/label:
+    put:
+      tags:
+        - "label"
+      summary: "标注"
+      description: "用来设置指定时间窗口内标注为特定值(正常/异常/不确定)"
+      parameters:
+        - $ref: "#/parameters/dataName"
+        - $ref: "#/parameters/startTime"
+        - $ref: "#/parameters/endTime"
+        - name: labelType
+          in: query
+          description: 标注类型
+          required: true
+          type: number
+          enum:
+            - 0 # 正常
+            - 1 # 异常
+            - -1 # 不确定
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: "#/definitions/Response"
+  /data/{dataName}/reference:
+    get:
+      tags:
+        - "label"
+      summary: "获取参考线"
+      description: "用来获取指定时间窗口内的参考线"
+      parameters:
+        - $ref: "#/parameters/dataName"
+        - $ref: "#/parameters/startTime"
+        - $ref: "#/parameters/endTime"
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                xml:
+                  name: reference
+                  wrapped: true
+                items:
+                  required:
+                    - name
+                    - lines
+                  properties:
+                    name:
+                      type: string
+                    lines:
+                      type: array
+                      xml:
+                        name: line
+                        wrapped: true
+                      minItems: 2
+                      maxItems: 3
+                      items:
+                        $ref: "#/definitions/Line"
+              msg:
+                type: string
+              server:
+                type: string
+              traceId:
+                type: string
+  /data/{dataName}/thumb:
+    get:
+      tags:
+        - "label"
+      summary: "获取缩略图"
+      description: "用来获取数据的缩略图"
+      parameters:
+        - $ref: "#/parameters/dataName"
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                $ref: "#/definitions/Line"
+              msg:
+                type: string
+              server:
+                type: string
+              traceId:
+                type: string
+  /data/{dataName}/band:
+    get:
+      tags:
+        - "label"
+      summary: "获取辅助标注区块"
+      description: "用来获取数据的全部辅助标注 band"
+      parameters:
+        - $ref: "#/parameters/dataName"
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                type: array
+                xml:
+                  name: bands
+                  wrapped: true
+                items:
+                  $ref: "#/definitions/Bands"
+              msg:
+                type: string
+              server:
+                type: string
+              traceId:
+                type: string
+    post:
+      tags:
+        - "label"
+      summary: "获取辅助标注区块"
+      description: "用来获取数据的全部辅助标注 band"
+      parameters:
+        - $ref: "#/parameters/dataName"
+        - $ref: "#/parameters/startTime"
+        - $ref: "#/parameters/endTime"
+      responses:
+        200:
+          description: OK
+          schema:
+            required:
+              - data
+            properties:
+              data:
+                $ref: "#/definitions/Bands"
+              msg:
+                type: string
+              server:
+                type: string
+              traceId:
+                type: string
+parameters:
+  dataName:
+    name: dataName
+    in: path
+    required: true
+    description: 数据名称
+    type: string
+  startTime:
+    name: startTime
+    in: query
+    description: 开始时间
+    type: string
+    format: date-time
+    default: "1970-01-01T08:00:00Z"
+  endTime:
+    name: endTime
+    in: query
+    description: 结束时间
+    type: string
+    format: date-time
+    default: "1970-01-01T08:00:00Z"
+definitions:
+  Response:
+    properties:
+      msg:
+        type: string
+      server:
+        type: string
+      traceId:
+        type: string
+  Time:
+    type: string
+    format: date-time
+  TimeSlot:
+    properties:
+      start:
+        $ref: "#/definitions/Time"
+      end:
+        $ref: "#/definitions/Time"
+  Meta:
+    properties:
+      id:
+        type: integer
+        format: int32
+      name:
+        type: string
+      times:
+        $ref: "#/definitions/TimeSlot"
+      period:
+        properties:
+          length:
+            type: integer
+            format: int32
+          ratio:
+            type: number
+            format: float
+      labelScale:
+        type: number
+        format: float
+  Line:
+    type: array
+    xml:
+      name: data
+      wrapped: true
+    items:
+      properties:
+        time:
+          $ref: "#/definitions/Time"
+        value:
+          type: number
+          format: float
+        label:
+          type: number
+          enum:
+            - 0 # 正常
+            - 1 # 异常
+            - -1 # 不确定
+  Bands:
+    required:
+      - name
+      - bands
+    properties:
+      name:
+        type: string
+      bands:
+        type: array
+        xml:
+          name: label
+          wrapped: true
+        items:
+          $ref: "#/definitions/TimeSlot"
+  Data:
+    properties:
+      meta:
+        $ref: "#/definitions/Meta"
+      raw:
+        $ref: "#/definitions/Line"
