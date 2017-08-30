@@ -10,5 +10,8 @@ from .. import schemas
 class Tooltips(Resource):
 
     def get(self):
-
-        return {}, 200, None
+        actions = [{
+            "action": "foo",
+            "name": "占位操作"
+        }]
+        return {'data': actions, 'msg': 'OK', 'traceId': '', 'server': ''}, 200, None

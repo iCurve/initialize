@@ -2,8 +2,8 @@
 
 ###
 ### DO NOT CHANGE THIS FILE
-### 
-### The code is auto generated, your change will be overwritten by 
+###
+### The code is auto generated, your change will be overwritten by
 ### code generating.
 ###
 from __future__ import absolute_import
@@ -140,7 +140,7 @@ def response_filter(view):
         if not schemas:
             # return resp, status, headers
             abort(500, message='`%d` is not a defined status code.' % status)
-        # TODO: file type schema bug
+
         resp, errors = normalize(schemas['schema'], resp)
         if schemas['headers']:
             headers, header_errors = normalize(

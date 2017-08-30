@@ -4,8 +4,8 @@
 
 ###
 ### DO NOT CHANGE THIS FILE
-### 
-### The code is auto generated, your change will be overwritten by 
+###
+### The code is auto generated, your change will be overwritten by
 ### code generating.
 ###
 
@@ -28,12 +28,12 @@ DefinitionsBandcategory = {'properties': {'bands': DefinitionsBanditems, 'name':
 DefinitionsBandresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': DefinitionsBanditems}}]}
 
 validators = {
-    ('data_dataName_label', 'PUT'): {'form': {'required': ['startTime', 'endTime', 'label'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'label': {'description': u'\u6807\u6ce8\u7c7b\u578b', 'format': 'int64', 'enum': [0, 1, -1], 'type': 'integer'}}}},
-    ('data_dataName_band_bandName', 'GET'): {'args': {'required': [], 'properties': {'order': {'description': u'\u6392\u5e8f\u4f9d\u636e', 'default': 'time', 'enum': ['time', 'reliablity'], 'type': 'string'}}}, 'form': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
-    ('data_dataName', 'PUT'): {'form': {'required': ['startTime', 'endTime', 'action'], 'properties': {'action': {'description': u'\u6570\u636e\u64cd\u4f5c\u540d\u79f0', 'enum': ['foo'], 'type': 'string'}, 'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
-    ('data_dataName', 'POST'): {'form': {'properties': {'file': {'type': 'file', 'description': u'\u539f\u59cb\u6570\u636e\u6587\u4ef6'}}}},
-    ('datas', 'GET'): {'args': {'required': ['pattern'], 'properties': {'pattern': {'type': 'string', 'description': u'\u6570\u636e\u540d\u79f0\u5339\u914d\u89c4\u5219'}}}},
-    ('data_dataName_curves', 'GET'): {'form': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'bandName': {'type': 'string', 'description': u'band\u540d\u79f0'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
+    ('data_dataName_label', 'PUT'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}, 'form': {'required': ['label'], 'properties': {'label': {'description': u'\u6807\u6ce8\u7c7b\u578b', 'format': 'int64', 'enum': [0, 1, -1], 'type': 'integer'}}}},
+    ('data_dataName_band_bandName', 'GET'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'order': {'description': u'\u6392\u5e8f\u4f9d\u636e', 'default': 'time', 'enum': ['time', 'reliablity'], 'type': 'string'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
+    ('data_dataName', 'PUT'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}, 'form': {'required': ['action'], 'properties': {'action': {'description': u'\u6570\u636e\u64cd\u4f5c\u540d\u79f0', 'enum': ['foo'], 'type': 'string'}}}},
+    ('data_dataName', 'POST'): {'form': {'required': ['file'], 'properties': {'file': {'type': 'file', 'description': u'\u539f\u59cb\u6570\u636e\u6587\u4ef6'}}}},
+    ('datas', 'GET'): {'args': {'required': [], 'properties': {'pattern': {'type': 'string', 'description': u'\u6570\u636e\u540d\u79f0\u5339\u914d\u89c4\u5219'}}}},
+    ('data_dataName_curves', 'GET'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'bandName': {'type': 'string', 'description': u'band\u540d\u79f0'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
 }
 
 filters = {
@@ -206,4 +206,3 @@ def normalize(schema, data, required_defaults=None):
         return funcs[type_](schema, data)
 
     return _normalize(schema, data), errors
-

@@ -34,7 +34,6 @@ paths:
         - name: pattern
           in: query
           description: 数据名称匹配规则
-          required: true
           type: string
       responses:
         '200':
@@ -135,7 +134,7 @@ paths:
         - $ref: '#/parameters/endTime'
         - name: bandName
           description: band名称
-          in: formData
+          in: query
           type: string
       responses:
         '200':
@@ -248,7 +247,7 @@ parameters:
   startTime:
     description: 开始时间(unix时间戳，毫秒级)
     name: startTime
-    in: formData
+    in: query
     required: true
     type: integer
     format: int64
@@ -256,7 +255,7 @@ parameters:
   endTime:
     description: 结束时间(unix时间戳，毫秒级)
     name: endTime
-    in: formData
+    in: query
     required: true
     type: integer
     format: int64
@@ -357,6 +356,16 @@ definitions:
         type: string
       type:
         type: string
+      yAxis:
+        type: array
+        xml:
+          name: value
+          wrapped: true
+        minItems: 2
+        maxItems: 2
+        items:
+          type: number
+          format: float
       data:
         type: array
         xml:
