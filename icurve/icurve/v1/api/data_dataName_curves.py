@@ -14,7 +14,7 @@ from .. import schemas
 class DataDatanameCurves(Resource):
 
     def get(self, dataName):
-        lines = []
+        trends = []
         data = Data.query.filter_by(name=dataName).one()
         start_time = max(g.args['startTime'], data.start_time)
         end_time = min(g.args['endTime'], data.end_time)
@@ -38,7 +38,7 @@ class DataDatanameCurves(Resource):
             if label[key] is None:
                 label[key] = 0
             label[key] += point.value
-        label = sorted([(timestamp, value) for timestamp, value in label.items()])
+        label = sorted([(timestamp * 1000, value) for timestamp, value in label.items()])
 
         # TODO: 参考线等
         refs = []
@@ -47,7 +47,7 @@ class DataDatanameCurves(Resource):
                 refs.append((point[0], point[1] + int(random.gauss(20, 10000))))
             else:
                 refs.append(point)
-        lines.append({
+        trends.append({
             'name': '周同比',
             'type': 'line',
             'data': refs
@@ -58,7 +58,7 @@ class DataDatanameCurves(Resource):
                 refs.append((point[0], point[1] + int(random.gauss(5, 100))))
             else:
                 refs.append(point)
-        lines.append({
+        trends.append({
             'name': '天同比',
             'type': 'line',
             'data': refs
@@ -69,28 +69,28 @@ class DataDatanameCurves(Resource):
                 refs.append((point[0], point[1] - int(random.gauss(5, 1000)), point[1] + int(random.gauss(5, 1000))))
             else:
                 refs.append(point)
-        lines.append({
+        trends.append({
             'name': '参考区间',
             'type': 'arearange',
             'data': refs
         })
 
         # 原始曲线
-        lines.append({
+        trends.append({
             'name': '原始曲线',
             'type': 'line',
             'data': line
         })
         # 标注曲线
-        lines.append({
+        trends.append({
             'name': '标注曲线',
             'type': 'line',
             'data': label
         })
 
-        return {
-           'data': lines,
-           'msg': 'OK',
-           'traceId': '',
-           'server': ''
-        }, 200, None
+        bands = []
+
+        return self.render(data={
+               'trends': trends,
+               'bands': bands
+           }), 200, None

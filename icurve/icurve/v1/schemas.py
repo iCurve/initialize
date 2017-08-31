@@ -4,8 +4,8 @@
 
 ###
 ### DO NOT CHANGE THIS FILE
-###
-### The code is auto generated, your change will be overwritten by
+### 
+### The code is auto generated, your change will be overwritten by 
 ### code generating.
 ###
 
@@ -14,26 +14,26 @@ base_path = '/v1'
 
 DefinitionsCommonresponse = {'required': ['msg', 'server', 'traceId'], 'description': u'\u8fd4\u56de\u503c\u7684\u901a\u7528\u5b57\u6bb5', 'properties': {'msg': {'type': 'string'}, 'traceId': {'type': 'string'}, 'server': {'type': 'string'}}}
 DefinitionsAction = {'properties': {'action': {'enum': ['foo'], 'type': 'string'}, 'name': {'enum': [u'\u5360\u4f4d\u64cd\u4f5c'], 'type': 'string'}}}
-DefinitionsTrend = {'properties': {'type': {'type': 'string'}, 'data': {'xml': {'wrapped': True, 'name': 'point'}, 'items': {'xml': {'wrapped': True, 'name': 'value'}, 'minItems': 2, 'type': 'array', 'maxItems': 3, 'items': {'type': 'number'}}, 'type': 'array'}, 'name': {'type': 'string'}}}
+DefinitionsTrend = {'required': ['name', 'type', 'data'], 'properties': {'type': {'type': 'string'}, 'data': {'xml': {'wrapped': True, 'name': 'point'}, 'items': {'xml': {'wrapped': True, 'name': 'value'}, 'minItems': 2, 'type': 'array', 'maxItems': 3, 'items': {'type': 'number'}}, 'type': 'array'}, 'name': {'type': 'string'}, 'yAxis': {'xml': {'wrapped': True, 'name': 'value'}, 'minItems': 2, 'type': 'array', 'maxItems': 2, 'items': {'type': 'number', 'format': 'float'}}}}
 DefinitionsTime = {'type': 'integer', 'description': u'unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7', 'format': 'int64'}
 DefinitionsThumbresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': DefinitionsTrend}}]}
 DefinitionsTimeslot = {'required': ['start', 'end'], 'description': u'\u65f6\u95f4\u6bb5', 'properties': {'start': DefinitionsTime, 'end': DefinitionsTime}}
-DefinitionsTrendresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': {'items': DefinitionsTrend, 'type': 'array'}}}]}
 DefinitionsTooltipresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': {'xml': {'wrapped': True, 'name': 'tooltip'}, 'items': DefinitionsAction, 'type': 'array'}}}]}
 DefinitionsBandtime = {'required': ['duration'], 'properties': {'duration': DefinitionsTimeslot, 'show': DefinitionsTimeslot}}
 DefinitionsMeta = {'required': ['name'], 'description': u'\u6570\u636e\u7684\u5143\u4fe1\u606f', 'properties': {'updateTime': DefinitionsTime, 'name': {'type': 'string'}, 'uri': {'type': 'string', 'description': u'\u4e0b\u8f7d\u6570\u636e\u7684url'}, 'period': {'required': ['length', 'ratio'], 'description': u'\u6570\u636e\u7684\u5468\u671f', 'properties': {'length': {'type': 'integer', 'description': u'\u6570\u636e\u7684\u5468\u671f\uff0c\u5355\u4f4d\uff1a\u79d2', 'format': 'int64'}, 'ratio': {'type': 'number', 'description': u'\u7b26\u5408\u5468\u671f\u7684\u6570\u636e\u5360\u6bd4', 'format': 'float'}}}, 'labelRatio': {'type': 'number', 'description': u'\u6807\u6ce8\u6570\u636e\u7684\u5360\u6bd4', 'format': 'float'}, 'time': DefinitionsTimeslot, 'id': {'type': 'integer', 'format': 'int64'}, 'createTime': DefinitionsTime}}
-DefinitionsBanditems = {'xml': {'wrapped': True, 'name': 'band'}, 'items': {'required': ['timeno', 'bandcount', 'time'], 'properties': {'nextTime': DefinitionsBandtime, 'bandCount': {'type': 'integer', 'format': 'int64'}, 'preTime': DefinitionsBandtime, 'reliablity': {'type': 'number', 'description': u'\u63cf\u8ff0\u6240\u751f\u6210 band \u7684\u53ef\u4fe1\u7a0b\u5ea6', 'format': 'float'}, 'currentTime': DefinitionsBandtime, 'timeNo': {'type': 'integer', 'format': 'int64'}}}, 'type': 'array'}
+DefinitionsBanditems = {'xml': {'wrapped': True, 'name': 'band'}, 'items': {'required': ['bandNo', 'bandCount', 'currentTime'], 'properties': {'nextTime': DefinitionsBandtime, 'bandCount': {'type': 'integer', 'format': 'int64'}, 'preTime': DefinitionsBandtime, 'reliablity': {'type': 'number', 'description': u'\u63cf\u8ff0\u6240\u751f\u6210 band \u7684\u53ef\u4fe1\u7a0b\u5ea6', 'format': 'float'}, 'bandNo': {'type': 'integer', 'format': 'int64'}, 'currentTime': DefinitionsBandtime}}, 'type': 'array'}
 DefinitionsDatalistresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': {'xml': {'wrapped': True, 'name': 'meta'}, 'items': DefinitionsMeta, 'type': 'array'}}}]}
 DefinitionsBandcategory = {'properties': {'bands': DefinitionsBanditems, 'name': {'type': 'string'}}}
 DefinitionsBandresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': DefinitionsBanditems}}]}
+DefinitionsTrendresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': {'properties': {'bands': {'items': DefinitionsBandcategory, 'type': 'array'}, 'trends': {'items': DefinitionsTrend, 'type': 'array'}}}}}]}
 
 validators = {
-    ('data_dataName_label', 'PUT'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}, 'form': {'required': ['label'], 'properties': {'label': {'description': u'\u6807\u6ce8\u7c7b\u578b', 'format': 'int64', 'enum': [0, 1, -1], 'type': 'integer'}}}},
-    ('data_dataName_band_bandName', 'GET'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'order': {'description': u'\u6392\u5e8f\u4f9d\u636e', 'default': 'time', 'enum': ['time', 'reliablity'], 'type': 'string'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
-    ('data_dataName', 'PUT'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}, 'form': {'required': ['action'], 'properties': {'action': {'description': u'\u6570\u636e\u64cd\u4f5c\u540d\u79f0', 'enum': ['foo'], 'type': 'string'}}}},
-    ('data_dataName', 'POST'): {'form': {'required': ['file'], 'properties': {'file': {'type': 'file', 'description': u'\u539f\u59cb\u6570\u636e\u6587\u4ef6'}}}},
+    ('data_dataName_label', 'PUT'): {'args': {'required': ['startTime', 'endTime', 'label'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'type': 'integer'}, 'label': {'description': u'\u6807\u6ce8\u7c7b\u578b', 'format': 'int64', 'enum': [0, 1, -1], 'type': 'integer'}}}},
+    ('data_dataName_band_bandName', 'GET'): {'args': {'required': [], 'properties': {'endTime': {'format': 'int64', 'default': 0, 'type': 'integer', 'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)'}, 'order': {'description': u'\u6392\u5e8f\u4f9d\u636e', 'default': 'time', 'enum': ['time', 'reliablity'], 'type': 'string'}, 'startTime': {'format': 'int64', 'default': 0, 'type': 'integer', 'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)'}}}},
+    ('data_dataName', 'PUT'): {'args': {'required': ['startTime', 'endTime', 'action'], 'properties': {'action': {'description': u'\u6570\u636e\u64cd\u4f5c\u540d\u79f0', 'enum': ['foo'], 'type': 'string'}, 'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'type': 'integer'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'type': 'integer'}}}},
+    ('data_dataName', 'POST'): {'form': {'required': [], 'properties': {'file': {'type': 'file', 'description': u'\u539f\u59cb\u6570\u636e\u6587\u4ef6'}}}},
     ('datas', 'GET'): {'args': {'required': [], 'properties': {'pattern': {'type': 'string', 'description': u'\u6570\u636e\u540d\u79f0\u5339\u914d\u89c4\u5219'}}}},
-    ('data_dataName_curves', 'GET'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}, 'bandName': {'type': 'string', 'description': u'band\u540d\u79f0'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'default': 0, 'type': 'integer'}}}},
+    ('data_dataName_curves', 'GET'): {'args': {'required': ['startTime', 'endTime'], 'properties': {'endTime': {'description': u'\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'type': 'integer'}, 'bandName': {'type': 'string', 'description': u'band\u540d\u79f0'}, 'startTime': {'description': u'\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)', 'format': 'int64', 'type': 'integer'}}}},
 }
 
 filters = {
@@ -44,7 +44,7 @@ filters = {
     ('data_dataName', 'PUT'): {200: {'headers': None, 'schema': DefinitionsCommonresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}, 422: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName', 'POST'): {201: {'headers': {'Location': {'type': 'string', 'description': u'\u6570\u636e uri'}}, 'schema': DefinitionsCommonresponse}, 422: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName', 'GET'): {200: {'headers': None, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
-    ('data_dataName', 'DELETE'): {404: {'headers': None, 'schema': DefinitionsCommonresponse}, 405: {'headers': None, 'schema': DefinitionsCommonresponse}},
+    ('data_dataName', 'DELETE'): {200: {'headers': None, 'schema': DefinitionsCommonresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}, 405: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('datas', 'GET'): {200: {'headers': None, 'schema': DefinitionsDatalistresponse}},
     ('data_dataName_thumb', 'GET'): {200: {'headers': None, 'schema': DefinitionsThumbresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName_curves', 'GET'): {200: {'headers': None, 'schema': DefinitionsTrendresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
@@ -206,3 +206,4 @@ def normalize(schema, data, required_defaults=None):
         return funcs[type_](schema, data)
 
     return _normalize(schema, data), errors
+

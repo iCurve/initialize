@@ -15,13 +15,12 @@ class Datas(Resource):
         if 'pattern' in g.args:
             query = query.filter(db.text("name like :name")).params(name='%%%s%%' % g.args['pattern'])
         data = query.order_by(Data.name).all()
-        print('%%%s%%' % g.args['pattern'])
         for index, value in enumerate(data):
             # 数据重新装箱
             data[index] = {
                 "id": value.id,
                 "name": value.name,
-                "uri": '/data/%s' % value.name,
+                "uri": '/v1/data/%s' % value.name,
                 "createTime": value.create_time * 1000,
                 "updateTime": value.update_time * 1000,
                 "labelRatio": value.label_ratio,
@@ -35,4 +34,4 @@ class Datas(Resource):
                 }
             }
 
-        return {'data': data, 'msg': 'OK', 'traceId': '', 'server': ''}, 200, None
+        return self.render(data=data), 200, None

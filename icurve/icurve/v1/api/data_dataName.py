@@ -5,27 +5,36 @@ import csv
 
 import time
 
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 from flask import request, g, current_app
 
+from ..schemas import base_path
 from . import Resource
-from ..models import Data, Point, db
+from ..models import Data, Point, db, Band
 from ..utils import str2time, parse_mark, time2str
-from .. import schemas
 
 
 class DataDataname(Resource):
 
     def get(self, dataName):
-        string_io = StringIO.StringIO()
+        if not Data.query.filter_by(name=dataName).one():
+            return self.render(msg='%s not found' % dataName), 404, None
+        string_io = StringIO()
         writer = csv.writer(string_io)
         for point in Point.query.filter_by(data_name=dataName).all():
             writer.writerow([time2str(point.timestamp), point.value, point.mark])
+
         # TODO: fix validators bug
         return current_app.response_class(
             string_io.getvalue(),
             status=200,
-            headers={'Content-Disposition': 'attachment; filename=%s.csv' % dataName},
+            headers={
+                'Content-Disposition': 'attachment; filename=%s.csv' % dataName,
+                'Content-Type': 'text/plain'
+            },
             mimetype='application/json'
         )
 
@@ -66,7 +75,7 @@ class DataDataname(Resource):
             db.session.add(data)
             db.session.commit()
 
-        return {'msg': 'OK', 'traceId': '', 'server': ''}, 201, {'Location': '/data/%s' % dataName}
+        return self.render(), 201, {'Location': '%s/data/%s' % (base_path, dataName)}
 
     def put(self, dataName):
         # TODO: action
@@ -74,8 +83,11 @@ class DataDataname(Resource):
         print(g.form['endTime'])
         print(g.form['action'])
 
-        return {'msg': 'Not Acceptable', 'traceId': '', 'server': ''}, 405, None
+        return self.render('Not Acceptable'), 405, None
 
     def delete(self, dataName):
-        # TODO: delete
-        return {'msg': 'Not Acceptable', 'traceId': '', 'server': ''}, 405, None
+        Data.query.filter_by(name=dataName).delete()
+        Point.query.filter_by(data_name=dataName).delete()
+        Band.query.filter_by(data_name=dataName).delete()
+
+        return self.render(), 200, None

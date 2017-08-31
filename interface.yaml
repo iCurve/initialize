@@ -9,7 +9,7 @@ schemes:
   - http
 basePath: /v1
 consumes:
-  - application/x-www-form-urlencoded
+  - application/form-data
 produces:
   - application/json
 paths:
@@ -113,6 +113,10 @@ paths:
       parameters:
         - $ref: '#/parameters/dataName'
       responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponse'
         '404':
           description: Not Found
           schema:
@@ -195,8 +199,18 @@ paths:
       parameters:
         - $ref: '#/parameters/dataName'
         - $ref: '#/parameters/bandName'
-        - $ref: '#/parameters/startTime'
-        - $ref: '#/parameters/endTime'
+        - name: startTime
+          description: 开始时间(unix时间戳，毫秒级)
+          in: query
+          type: integer
+          format: int64
+          default: 0
+        - name: endTime
+          description: 结束时间(unix时间戳，毫秒级)
+          in: query
+          type: integer
+          format: int64
+          default: 0
         - $ref: '#/parameters/bandOrder'
       responses:
         '200':
@@ -236,7 +250,6 @@ parameters:
     name: file
     in: formData
     description: 原始数据文件
-    required: true
     type: file
   bandName:
     description: band名称
@@ -251,7 +264,6 @@ parameters:
     required: true
     type: integer
     format: int64
-    default: 0
   endTime:
     description: 结束时间(unix时间戳，毫秒级)
     name: endTime
@@ -259,11 +271,10 @@ parameters:
     required: true
     type: integer
     format: int64
-    default: 0
   action:
     description: 数据操作名称
     name: action
-    in: formData
+    in: query
     required: true
     type: string
     enum:
@@ -271,7 +282,7 @@ parameters:
   label:
     description: 标注类型
     name: label
-    in: formData
+    in: query
     required: true
     type: integer
     format: int64
@@ -351,6 +362,10 @@ definitions:
       updateTime:
         $ref: '#/definitions/Time'
   Trend:
+    required:
+      - name
+      - type
+      - data
     properties:
       name:
         type: string
@@ -395,11 +410,11 @@ definitions:
       wrapped: true
     items:
       required:
-        - timeno
-        - bandcount
-        - time
+        - bandNo
+        - bandCount
+        - currentTime
       properties:
-        timeNo:
+        bandNo:
           type: integer
           format: int64
         bandCount:
@@ -467,9 +482,15 @@ definitions:
       - $ref: '#/definitions/CommonResponse'
       - properties:
           data:
-            type: array
-            items:
-              $ref: '#/definitions/Trend'
+            properties:
+              trends:
+                type: array
+                items:
+                  $ref: '#/definitions/Trend'
+              bands:
+                type: array
+                items:
+                  $ref: '#/definitions/BandCategory'
   ThumbResponse:
     required:
       - data

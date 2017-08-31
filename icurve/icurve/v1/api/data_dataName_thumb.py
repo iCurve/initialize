@@ -28,13 +28,8 @@ class DataDatanameThumb(Resource):
                 data[key] = 0
             data[key] += point.value
 
-        return {
-           'data': {
+        return self.render(data={
                 'name': 'thumb',
                 'type': 'line',
-                'data': sorted([(timestamp, value) for timestamp, value in data.items()])
-            },
-           'msg': 'OK',
-           'traceId': '',
-           'server': ''
-        }, 200, None
+                'data': sorted([(timestamp * 1000, value) for timestamp, value in data.items()])
+            }), 200, None

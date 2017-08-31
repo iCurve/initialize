@@ -14,4 +14,4 @@ class Tooltips(Resource):
             "action": "foo",
             "name": "占位操作"
         }]
-        return {'data': actions, 'msg': 'OK', 'traceId': '', 'server': ''}, 200, None
+        return self.render(data=actions), 200, None

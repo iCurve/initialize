@@ -105,10 +105,20 @@
             "$ref": "#/parameters/bandName"
           }, 
           {
-            "$ref": "#/parameters/startTime"
+            "description": "\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
+            "format": "int64", 
+            "default": 0, 
+            "in": "query", 
+            "type": "integer", 
+            "name": "startTime"
           }, 
           {
-            "$ref": "#/parameters/endTime"
+            "description": "\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
+            "format": "int64", 
+            "default": 0, 
+            "in": "query", 
+            "type": "integer", 
+            "name": "endTime"
           }, 
           {
             "$ref": "#/parameters/bandOrder"
@@ -240,6 +250,12 @@
       }, 
       "delete": {
         "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
           "405": {
             "description": "Not Acceptable", 
             "schema": {
@@ -369,7 +385,6 @@
     "startTime": {
       "description": "\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
       "format": "int64", 
-      "default": 0, 
       "required": true, 
       "in": "query", 
       "type": "integer", 
@@ -384,7 +399,7 @@
       "description": "\u6807\u6ce8\u7c7b\u578b", 
       "format": "int64", 
       "required": true, 
-      "in": "formData", 
+      "in": "query", 
       "type": "integer", 
       "name": "label"
     }, 
@@ -407,7 +422,6 @@
       "name": "order"
     }, 
     "file": {
-      "required": true, 
       "type": "file", 
       "description": "\u539f\u59cb\u6570\u636e\u6587\u4ef6", 
       "name": "file", 
@@ -419,14 +433,13 @@
       ], 
       "name": "action", 
       "required": true, 
-      "in": "formData", 
+      "in": "query", 
       "type": "string", 
       "description": "\u6570\u636e\u64cd\u4f5c\u540d\u79f0"
     }, 
     "endTime": {
       "description": "\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
       "format": "int64", 
-      "default": 0, 
       "required": true, 
       "in": "query", 
       "type": "integer", 
@@ -446,6 +459,11 @@
   "basePath": "/v1", 
   "definitions": {
     "Trend": {
+      "required": [
+        "name", 
+        "type", 
+        "data"
+      ], 
       "properties": {
         "data": {
           "xml": {
@@ -471,6 +489,19 @@
         }, 
         "name": {
           "type": "string"
+        }, 
+        "yAxis": {
+          "xml": {
+            "wrapped": true, 
+            "name": "value"
+          }, 
+          "minItems": 2, 
+          "type": "array", 
+          "maxItems": 2, 
+          "items": {
+            "type": "number", 
+            "format": "float"
+          }
         }
       }
     }, 
@@ -533,10 +564,20 @@
         {
           "properties": {
             "data": {
-              "items": {
-                "$ref": "#/definitions/Trend"
-              }, 
-              "type": "array"
+              "properties": {
+                "bands": {
+                  "items": {
+                    "$ref": "#/definitions/BandCategory"
+                  }, 
+                  "type": "array"
+                }, 
+                "trends": {
+                  "items": {
+                    "$ref": "#/definitions/Trend"
+                  }, 
+                  "type": "array"
+                }
+              }
             }
           }
         }
@@ -581,9 +622,9 @@
       }, 
       "items": {
         "required": [
-          "timeno", 
-          "bandcount", 
-          "time"
+          "bandNo", 
+          "bandCount", 
+          "currentTime"
         ], 
         "properties": {
           "nextTime": {
@@ -600,7 +641,7 @@
           "preTime": {
             "$ref": "#/definitions/BandTime"
           }, 
-          "timeNo": {
+          "bandNo": {
             "type": "integer", 
             "format": "int64"
           }, 
@@ -747,6 +788,6 @@
   }, 
   "swagger": "2.0", 
   "consumes": [
-    "application/x-www-form-urlencoded"
+    "application/form-data"
   ]
 }

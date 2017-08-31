@@ -48,3 +48,13 @@ class Point(db.Model):
 
     def __repr__(self):
         return repr_p(self)
+
+
+class Band(db.Model):
+    __tablename__ = 'band'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    data_name = db.Column(db.String(50), nullable=False)  # 外键？
+    name = db.Column(db.String(50), nullable=False)
+    start_time = db.Column(db.Integer, nullable=False)
+    end_time = db.Column(db.Integer, nullable=False)
+    reliablity = db.Column(db.Float, nullable=True)

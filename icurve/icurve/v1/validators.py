@@ -2,8 +2,8 @@
 
 ###
 ### DO NOT CHANGE THIS FILE
-###
-### The code is auto generated, your change will be overwritten by
+### 
+### The code is auto generated, your change will be overwritten by 
 ### code generating.
 ###
 from __future__ import absolute_import
