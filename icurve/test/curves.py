@@ -28,5 +28,5 @@ class CurvesTestCase(IcurveTestCase):
         message = 'GET /v1/data/<dataName>/band/<bandName> 正常情况'
         self.client.post(path='/v1/data/%s' % data_name, data={'file': (StringIO(test_case), 'test.csv')})
         # test
-        response = self.client.get(path='/v1/data/%s/curves' % data_name)
+        response = self.client.get(path='/v1/data/%s/curves?startTime=1503849600&endTime=1503850260' % data_name)
         self.assertJsonResponse(response, 200, message)

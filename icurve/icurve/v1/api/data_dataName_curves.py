@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
 
-import copy
-import random
+import urllib
 
-from flask import request, g
+from flask import g
 
-from ..models import Data, Point, db
+from ..mods import ModManager
+from ..service import DataService
+from ..models import db, Band
 from . import Resource
 from .. import schemas
 
@@ -15,65 +16,33 @@ class DataDatanameCurves(Resource):
 
     def get(self, dataName):
         trends = []
-        data = Data.query.filter_by(name=dataName).one()
-        start_time = max(g.args['startTime'], data.start_time)
-        end_time = min(g.args['endTime'], data.end_time)
-        period = data.period
-        points = Point.query.filter(db.and_(
-            Point.data_name.is_(dataName),
-            Point.timestamp.between(start_time, end_time)
-        )).all()
-        line = {timestamp: None for timestamp in range(start_time, end_time + period, period)}
-        for point in points:
-            key = point.timestamp / period * period
-            if line[key] is None:
-                line[key] = 0
-            line[key] += point.value
-        line = sorted([(timestamp, value) for timestamp, value in line.items()])
-        label = {timestamp: None for timestamp in range(start_time, end_time, period)}
-        for point in points:
-            if point.mark != 1:
-                continue
-            key = point.timestamp / period * period
-            if label[key] is None:
-                label[key] = 0
-            label[key] += point.value
-        label = sorted([(timestamp * 1000, value) for timestamp, value in label.items()])
+        data_name = dataName
+        if isinstance(data_name, unicode):
+            data_name = data_name.encode('utf-8')
+        data_service = DataService(data_name)
+        mod = ModManager(data_service)
+        start_time = g.args['startTime']
+        end_time = g.args['endTime']
 
-        # TODO: 参考线等
-        refs = []
-        for point in line:
-            if point[1] is not None:
-                refs.append((point[0], point[1] + int(random.gauss(20, 10000))))
+        line = data_service.get_data(start_time, end_time)
+        _, line = mod.sampling(line)
+
+        refs = mod.reference(line)
+
+        for ref in refs:
+            if len(ref) < 2 or len(ref[1]) < 1:
+                continue
+            if len(ref[1][0]) == 2:
+                ref_type = 'line'
+            elif len(ref[1][0]) == 3:
+                ref_type = 'arearange'
             else:
-                refs.append(point)
-        trends.append({
-            'name': '周同比',
-            'type': 'line',
-            'data': refs
-        })
-        refs = []
-        for point in line:
-            if point[1] is not None:
-                refs.append((point[0], point[1] + int(random.gauss(5, 100))))
-            else:
-                refs.append(point)
-        trends.append({
-            'name': '天同比',
-            'type': 'line',
-            'data': refs
-        })
-        refs = []
-        for point in line:
-            if point[1] is not None:
-                refs.append((point[0], point[1] - int(random.gauss(5, 1000)), point[1] + int(random.gauss(5, 1000))))
-            else:
-                refs.append(point)
-        trends.append({
-            'name': '参考区间',
-            'type': 'arearange',
-            'data': refs
-        })
+                continue
+            trends.append({
+                'name': ref[0],
+                'type': ref_type,
+                'data': ref[1]
+            })
 
         # 原始曲线
         trends.append({
@@ -85,12 +54,17 @@ class DataDatanameCurves(Resource):
         trends.append({
             'name': '标注曲线',
             'type': 'line',
-            'data': label
+            'data': line
         })
 
         bands = []
-
+        band_names = db.session.query(db.distinct(Band.name)).all()
+        for band_name, in band_names:
+            bands.append({
+                'name': urllib.unquote(band_name.encode('utf-8')),
+                'bands': data_service.get_band(urllib.unquote(band_name.encode('utf-8')), start_time, end_time)
+            })
         return self.render(data={
-               'trends': trends,
-               'bands': bands
-           }), 200, None
+            'trends': trends,
+            'bands': bands
+        }), 200, None

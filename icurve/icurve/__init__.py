@@ -3,6 +3,7 @@ from __future__ import absolute_import
 import os
 
 from flask import Flask
+from flask_cors import CORS
 
 from .v1 import bp
 from .v1.models import db
@@ -16,9 +17,8 @@ def create_app():
     db.init_app(app)
     with app.test_request_context():
         db.create_all()
-    app.register_blueprint(
-        bp,
-        url_prefix='/v1')
+    app.register_blueprint(bp, url_prefix='/v1')
+    CORS(app)
     return app
 
 

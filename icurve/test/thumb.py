@@ -29,7 +29,7 @@ class ThumbTestCase(IcurveTestCase):
                     '20170828001100,49476.0,1\r\n'
         test_resp = {
             'type': 'line',
-            'name': 'thumb',
+            'name': '抽样样例',
             'data': [
                 [1503849600000, 52794.0],
                 [1503849660000, 52558.0],

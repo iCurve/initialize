@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
 
-from flask import request, g
+from flask import g
 
-from ..models import db, Data
+from ..service import DataService
 from . import Resource
 from .. import schemas
 
@@ -11,27 +11,28 @@ from .. import schemas
 class Datas(Resource):
 
     def get(self):
-        query = Data.query
-        if 'pattern' in g.args:
-            query = query.filter(db.text("name like :name")).params(name='%%%s%%' % g.args['pattern'])
-        data = query.order_by(Data.name).all()
-        for index, value in enumerate(data):
-            # 数据重新装箱
-            data[index] = {
-                "id": value.id,
-                "name": value.name,
-                "uri": '/v1/data/%s' % value.name,
-                "createTime": value.create_time * 1000,
-                "updateTime": value.update_time * 1000,
-                "labelRatio": value.label_ratio,
+        pattern = None
+        if 'startTime' in g.args:
+            pattern = g.args['startTime']
+        datas = DataService.list(pattern)
+
+        datas = [
+            {
+                "id": data.id,
+                "name": data.name,
+                "uri": '/v1/data/%s' % data.name,
+                "createTime": data.create_time * 1000,
+                "updateTime": data.update_time * 1000,
+                "labelRatio": data.label_ratio,
                 "period": {
-                    "length": value.period,
-                    "ratio": value.period_ratio
+                    "length": data.period,
+                    "ratio": data.period_ratio
                 },
                 "time": {
-                    "start": value.start_time * 1000,
-                    "end": value.end_time * 1000
+                    "start": data.start_time * 1000,
+                    "end": data.end_time * 1000
                 }
-            }
+            } for data in datas
+        ]
 
-        return self.render(data=data), 200, None
+        return self.render(data=datas), 200, None

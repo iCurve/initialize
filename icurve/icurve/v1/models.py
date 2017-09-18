@@ -58,3 +58,13 @@ class Band(db.Model):
     start_time = db.Column(db.Integer, nullable=False)
     end_time = db.Column(db.Integer, nullable=False)
     reliablity = db.Column(db.Float, nullable=True)
+
+    def __init__(self, data_name, name, start_time, end_time, reliablity):
+        self.data_name = data_name
+        self.name = name
+        self.start_time = start_time
+        self.end_time = end_time
+        self.reliablity = reliablity
+
+    def __repr__(self):
+        return repr_p(self)
