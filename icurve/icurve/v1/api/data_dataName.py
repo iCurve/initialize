@@ -103,8 +103,24 @@ class DataDataname(Resource):
                     for band in bands:
                         db.session.add(band)
                 db.session.commit()
+                data = DataService(data_name).data
 
-            return self.render(), 201, {'Location': '%s/data/%s' % (base_path, data_name)}
+            return self.render(data={
+                "id": data.id,
+                "name": data.name,
+                "uri": '/v1/data/%s' % data.name,
+                "createTime": data.create_time * 1000,
+                "updateTime": data.update_time * 1000,
+                "labelRatio": data.label_ratio,
+                "period": {
+                    "length": data.period,
+                    "ratio": data.period_ratio
+                },
+                "time": {
+                    "start": data.start_time * 1000,
+                    "end": data.end_time * 1000
+                }
+            }), 201, {'Location': '%s/data/%s' % (base_path, data_name)}
         else:
             return self.render(msg='%s is exists' % data_name), 422, None
 

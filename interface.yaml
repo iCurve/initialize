@@ -59,7 +59,7 @@ paths:
               description: 数据 uri
               type: string
           schema:
-            $ref: '#/definitions/CommonResponse'
+            $ref: '#/definitions/DataMetaResponse'
         '422':
           description: Unprocessable Entity
           schema:
@@ -462,6 +462,14 @@ definitions:
               wrapped: true
             items:
               $ref: '#/definitions/Action'
+  DataMetaResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            $ref: '#/definitions/Meta'
   DataListResponse:
     required:
       - data
