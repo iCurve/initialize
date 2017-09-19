@@ -1,6 +1,6 @@
 # coding=utf-8
 
-from .base_test_case import IcurveTestCase
+from .base import IcurveTestCase
 
 
 class TooltipsTestCase(IcurveTestCase):

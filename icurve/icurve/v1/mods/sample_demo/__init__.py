@@ -1,5 +1,5 @@
 # coding=utf-8
-from math import floor
+from math import ceil
 
 
 def sampling(api, line, amount):
@@ -8,12 +8,12 @@ def sampling(api, line, amount):
     period = api.get_meta().period
     start_time = line[0][0]
     end_time = line[-1][0]
-    sample_period = int(floor((end_time - start_time + .0) / amount / period)) * period
+    sample_period = int(ceil((end_time - start_time + .0) / amount / period)) * period
     tmp_value = {
         timestamp: []
         for timestamp in range(
             start_time / sample_period * sample_period,
-            end_time / sample_period * sample_period,
+            end_time,
             sample_period
         )
     }
@@ -26,7 +26,7 @@ def sampling(api, line, amount):
             value = float(sum(value)/len(value))
         else:
             value = None
-        label = [x[1] for x in tmp_value[timestamp] if x[1] is not None]
+        label = [x[1] for x in tmp_value[timestamp] if len(x) > 1 and x[1] is not None]
         if len(label) > 0:
             label = max(label)
         else:

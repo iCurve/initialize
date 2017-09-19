@@ -2,16 +2,15 @@
 from __future__ import absolute_import, print_function
 
 import csv
-
 import time
+import urllib
 
+from flask import request, g
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-from flask import request, g
-import urllib
 
 from ..schemas import base_path
 from . import Resource
@@ -93,7 +92,7 @@ class DataDataname(Resource):
                 db.session.add(data)
                 data_service = DataService(data_name, data, points)
                 mod = ModManager(data_service)
-                for band_name, bands in mod.make_band():
+                for band_name, bands in mod.init_band():
                     # TODO: sqlite3 中文
                     band_name = urllib.quote(band_name)
                     bands = [

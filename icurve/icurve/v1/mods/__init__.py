@@ -5,6 +5,8 @@ import inspect
 from os import path
 from types import FunctionType
 
+from flask import current_app
+
 from ..exceptions import DataNotFoundException
 from ..service import DataService
 from ..utils import enum, MARK_ENUM
@@ -40,7 +42,7 @@ class ModManager(object):
         # TODO: other mods...
         'sampling': MOD_TYPE.SINGLE,
         'reference': MOD_TYPE.MULTI,
-        'make_band': MOD_TYPE.MULTI,
+        'init_band': MOD_TYPE.MULTI,
     }
     __ins = None
     mod_dir = path.abspath(path.join(path.dirname(inspect.getfile(inspect.currentframe())), '.'))
@@ -54,7 +56,7 @@ class ModManager(object):
             self.mods = {}
             for mod in os.listdir(self.mod_dir):
                 if path.exists(path.join(self.mod_dir, mod, "__init__.py")):
-                    plugin = '.'.join(['icurve', 'v1', 'mods', mod])
+                    plugin = '.'.join([current_app.root_path.split(os.sep)[-1], 'v1', 'mods', mod])
                     mod = importlib.import_module(plugin)
                     self.mods[mod.__name__] = mod
         return self.mods
@@ -75,8 +77,8 @@ class ModManager(object):
     def sampling(self, line, amount=1000):
         return self('sampling', line, amount)
 
-    def make_band(self):
-        return self('make_band')
+    def init_band(self):
+        return self('init_band')
 
     def reference(self, line):
         return self('reference', line)

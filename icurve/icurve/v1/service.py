@@ -1,4 +1,5 @@
 import urllib
+from operator import itemgetter
 
 from sqlalchemy.orm.exc import NoResultFound
 
@@ -114,35 +115,14 @@ class DataService(object):
 
         return self.cache['label']
 
-    def get_band(self, band_name, start_time=None, end_time=None, order=None):
+    def get_band(self, band_name, start_time=None, end_time=None):
         band_name = urllib.quote(band_name)
         query = Band.query.filter_by(data_name=self.data_name, name=band_name)
         if start_time is not None and end_time is not None:
-            query = query.filter(db.or_(Band.start_time < end_time, Band.end_time > start_time))
+            query = query.filter(db.and_(Band.start_time < end_time, Band.end_time > start_time))
         order = Band.start_time
         bands = query.order_by(order).all()
-        bands = [{
-            'bandNo': band_no + 1,
-            'bandCount': len(bands),
-            'currentTime': {
-                'duration': {
-                    'start': band.start_time * 1000,
-                    'end': band.end_time * 1000
-                },
-                'show': {
-                    'start': band.start_time - 600000,
-                    'end': band.end_time + 600000
-                },
-            },
-            'reliablity': band.reliablity
-        } for band_no, band in enumerate(bands)]
-        for band_no, band in enumerate(bands):
-            if band_no - 1 > -1:
-                bands[band_no - 1]['nextTime'] = band['currentTime']
-            if band_no + 1 < len(bands):
-                bands[band_no + 1]['preTime'] = band['currentTime']
-        if order == 'reliablity':
-            bands = sorted(bands, key=lambda x: x['reliablity'])
+        bands = [(band.start_time, band.end_time, band.reliablity) for band in bands]
 
         return bands
 

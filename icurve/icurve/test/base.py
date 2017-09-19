@@ -2,7 +2,7 @@ import unittest
 
 from flask import json
 
-from icurve import create_app
+from .. import create_app
 
 
 class IcurveTestCase(unittest.TestCase):
@@ -45,3 +45,6 @@ class IcurveTestCase(unittest.TestCase):
         if 'data' in response:
             return response['data']
         return {}
+
+import sys
+print sys.path

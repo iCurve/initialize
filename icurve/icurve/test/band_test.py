@@ -1,7 +1,7 @@
 # coding=utf-8
 import uuid
 
-from .base_test_case import IcurveTestCase
+from .base import IcurveTestCase
 
 try:
     from StringIO import StringIO

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
 
+from operator import itemgetter
+
 from flask import g
 
 from ..service import DataService
@@ -33,9 +35,32 @@ class DataDatanameBandBandname(Resource):
         if 'order' in g.args:
             order = g.args['order']
 
-        bands = DataService(data_name).get_band(band_name.encode('utf-8'), start_time, end_time, order)
+        band_items = DataService(data_name).get_band(band_name, start_time, end_time)
 
-        return self.render(data=bands), 200, None
+        band_items = [{
+            'bandNo': band_no + 1,
+            'bandCount': len(band_items),
+            'currentTime': {
+                'duration': {
+                    'start': band[0] * 1000,
+                    'end': band[1] * 1000
+                },
+                'show': {
+                    'start': (band[0] - (start_time - end_time) / 2) * 1000,
+                    'end': (band[1] + (start_time - end_time) / 2) * 1000
+                },
+            },
+            'reliablity': band[2]
+        } for band_no, band in enumerate(band_items)]
+        for band_no, band in enumerate(band_items):
+            if band_no - 1 > -1:
+                band_items[band_no - 1]['nextTime'] = band['currentTime']['show']
+            if band_no + 1 < len(band_items):
+                band_items[band_no + 1]['preTime'] = band['currentTime']['show']
+        if order in {'reliablity'}:
+            band_items = sorted(band_items, key=itemgetter(order))
+
+        return self.render(data=band_items), 200, None
 
     def delete(self, dataName, bandName):
         data_name = dataName

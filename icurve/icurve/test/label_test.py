@@ -1,7 +1,7 @@
 # coding=utf-8
 import uuid
 
-from .base_test_case import IcurveTestCase
+from .base import IcurveTestCase
 
 try:
     from StringIO import StringIO
@@ -9,9 +9,10 @@ except ImportError:
     from io import StringIO
 
 
-class CurvesTestCase(IcurveTestCase):
+class LabelTestCase(IcurveTestCase):
 
-    def test_get_curves(self):
+    # TODO: 标注效果检查
+    def test_label(self):
         # prepare
         data_name = str(uuid.uuid4()).replace('-', '')
         test_case = '20170828000000,52794.0,0\r\n' \
@@ -25,8 +26,9 @@ class CurvesTestCase(IcurveTestCase):
                     '20170828000800,49476.0,0\r\n' \
                     '20170828001000,49284.0,0\r\n' \
                     '20170828001100,49476.0,1\r\n'
-        message = 'GET /v1/data/<dataName>/band/<bandName> 正常情况'
+        message = 'PUT /v1/data/<dataName>/label 正常情况'
         self.client.post(path='/v1/data/%s' % data_name, data={'file': (StringIO(test_case), 'test.csv')})
         # test
-        response = self.client.get(path='/v1/data/%s/curves?startTime=1503849600&endTime=1503850260' % data_name)
-        self.assertJsonResponse(response, 200, message)
+        response = self.client.put(path='/v1/data/%s/label?startTime=%s&endTime=%s&label=1' %
+                                        (data_name, '1503849720000', '1503849960000'))
+        self.assertJsonResponse(response, 200, message=message)

@@ -144,5 +144,6 @@ crashlytics-build.properties
 fabric.properties
 
 /icurve/icurve/tmp/*
-/icurve/icurve/icurve.db
 .DS_Store
+icurve.db
+test.csv

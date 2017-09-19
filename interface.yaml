@@ -327,7 +327,12 @@ definitions:
   Meta:
     description: 数据的元信息
     required:
+      - id
       - name
+      - uri
+      - time
+      - period
+      - labelRatio
     properties:
       id:
         type: integer
@@ -371,16 +376,6 @@ definitions:
         type: string
       type:
         type: string
-      yAxis:
-        type: array
-        xml:
-          name: value
-          wrapped: true
-        minItems: 2
-        maxItems: 2
-        items:
-          type: number
-          format: float
       data:
         type: array
         xml:
@@ -398,6 +393,7 @@ definitions:
   BandTime:
     required:
       - duration
+      - show
     properties:
       duration:
         $ref: '#/definitions/TimeSlot'
@@ -413,6 +409,7 @@ definitions:
         - bandNo
         - bandCount
         - currentTime
+        - reliablity
       properties:
         bandNo:
           type: integer
@@ -423,14 +420,17 @@ definitions:
         currentTime:
           $ref: '#/definitions/BandTime'
         preTime:
-          $ref: '#/definitions/BandTime'
+          $ref: '#/definitions/TimeSlot'
         nextTime:
-          $ref: '#/definitions/BandTime'
+          $ref: '#/definitions/TimeSlot'
         reliablity:
           description: 描述所生成 band 的可信程度
           type: number
           format: float
   BandCategory:
+    required:
+      - name
+      - bands
     properties:
       name:
         type: string
@@ -490,6 +490,10 @@ definitions:
       - $ref: '#/definitions/CommonResponse'
       - properties:
           data:
+            required:
+              - trends
+              - bands
+              - yAxis
             properties:
               trends:
                 type: array
@@ -499,6 +503,16 @@ definitions:
                 type: array
                 items:
                   $ref: '#/definitions/BandCategory'
+              yAxis:
+                type: array
+                xml:
+                  name: value
+                  wrapped: true
+                minItems: 2
+                maxItems: 2
+                items:
+                  type: number
+                  format: float
   ThumbResponse:
     required:
       - data
