@@ -12,8 +12,8 @@ class Datas(Resource):
 
     def get(self):
         pattern = None
-        if 'startTime' in g.args:
-            pattern = g.args['startTime']
+        if 'pattern' in g.args:
+            pattern = g.args['pattern']
         datas = DataService.list(pattern)
 
         datas = [

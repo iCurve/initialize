@@ -19,7 +19,7 @@ class DataDatanameLabel(Resource):
 
         Point.query.filter(db.and_(
             Point.data_name.is_(data_name),
-            Point.timestamp.between(g.args['startTime'], g.args['endTime'])
+            Point.timestamp.between(g.args['startTime'] / 1000, g.args['endTime'] / 1000)
         )).update({Point.mark: g.args['label']}, synchronize_session=False)
         db.session.commit()
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, print_function
 
-from ..mods import ModManager
+from ..plugins import PluginManager
 from ..service import DataService
 from ..utils import s2ms
 from . import Resource
@@ -15,10 +15,10 @@ class DataDatanameThumb(Resource):
         if isinstance(data_name, unicode):
             data_name = data_name.encode('utf-8')
         data_service = DataService(data_name)
-        mod = ModManager(data_name)
+        plugin = PluginManager(data_name)
         line = data_service.get_line()
 
-        thumb_name, thumb = mod.sampling(line, 1440)
+        thumb_name, thumb = plugin.sampling(line, 1440)
 
         return self.render(data={
                 'name': thumb_name,

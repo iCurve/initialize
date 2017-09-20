@@ -7,7 +7,7 @@ def sampling(api, line, amount):
         return '抽样样例', line
     period = api.get_meta().period
     start_time = line[0][0]
-    end_time = line[-1][0]
+    end_time = line[-1][0] + period
     sample_period = int(ceil((end_time - start_time + .0) / amount / period)) * period
     tmp_value = {
         timestamp: []

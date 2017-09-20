@@ -6,8 +6,8 @@ from operator import itemgetter
 
 from flask import g
 
-from utils import s2ms
-from ..mods import ModManager
+from ..utils import s2ms
+from ..plugins import PluginManager
 from ..service import DataService
 from ..models import db, Band
 from . import Resource
@@ -22,35 +22,51 @@ class DataDatanameCurves(Resource):
         if isinstance(data_name, unicode):
             data_name = data_name.encode('utf-8')
         data_service = DataService(data_name)
-        mod = ModManager(data_service)
-        start_time = g.args['startTime']
-        end_time = g.args['endTime']
+        plugin = PluginManager(data_service)
+        start_time = g.args['startTime'] / 1000
+        end_time = g.args['endTime'] / 1000
 
         line = data_service.get_data(start_time, end_time)
-        _, line = mod.sampling(line)
+        _, line = plugin.sampling(line)
 
         y_axis = [float('inf'), float('-inf')]
-        y_axis[1] = max(y_axis[1], max(line, key=itemgetter(1)))
-        y_axis[0] = min(y_axis[0], min(line, key=itemgetter(1)))
 
-        refs = mod.reference(line)
+        values = [point[1] for point in line if point[1] is not None]
+        if len(values) > 0:
+            y_axis[1] = max(y_axis[1], max(values))
+            y_axis[0] = min(y_axis[1], min(values))
+
+        refs = plugin.reference(line)
 
         for ref_name, ref in refs:
-            if len(ref[0]) == 2:
+            if len(ref) > 0 and len(ref[0]) == 2:
                 ref_type = 'line'
-                y_axis[1] = max(y_axis[1], max(ref, key=itemgetter(1)))
-                y_axis[0] = min(y_axis[0], min(ref, key=itemgetter(1)))
-            elif len(ref[0]) == 3:
+                values = [point[1] for point in ref if point[1] is not None]
+            elif len(ref) > 0 and len(ref[0]) == 3:
                 ref_type = 'arearange'
-                y_axis[1] = max(y_axis[1], max(ref, key=itemgetter(2)))
-                y_axis[0] = min(y_axis[0], min(ref, key=itemgetter(1)))
+                values = [point[1] for point in ref if point[1] is not None] + \
+                         [point[2] for point in ref if point[2] is not None]
             else:
                 continue
+            if len(values) > 0:
+                y_axis[1] = max(y_axis[1], max(values))
+                y_axis[0] = min(y_axis[0], min(values))
             trends.append({
                 'name': ref_name,
                 'type': ref_type,
                 'data': ref
             })
+
+        # TODO: yAxis
+        if y_axis[1] == float('-inf'):
+            y_axis[1] = 0
+        if y_axis[0] == float('inf'):
+            y_axis[0] = 0
+        length = y_axis[1] - y_axis[0]
+        if y_axis[1] != 100:
+            y_axis[1] += 0.1 * length
+        if y_axis[0] != 0:
+            y_axis[0] -= 0.1 * length
 
         # 原始曲线
         trends.append({

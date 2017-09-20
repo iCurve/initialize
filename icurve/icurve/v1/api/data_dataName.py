@@ -18,7 +18,7 @@ from ..models import Data, Point, db, Band
 from ..utils import str2time, parse_mark, MARK_ENUM, time2str
 from ..service import DataService
 from ..exceptions import DataNotFoundException
-from ..mods import ModManager
+from ..plugins import PluginManager
 
 
 class DataDataname(Resource):
@@ -91,8 +91,8 @@ class DataDataname(Resource):
                 data = Data(data_name, start_time, end_time, period, period_ratio, label_ratio, create_time, update_time)
                 db.session.add(data)
                 data_service = DataService(data_name, data, points)
-                mod = ModManager(data_service)
-                for band_name, bands in mod.init_band():
+                plugin = PluginManager(data_service)
+                for band_name, bands in plugin.init_band():
                     # TODO: sqlite3 中文
                     band_name = urllib.quote(band_name)
                     bands = [
@@ -128,8 +128,8 @@ class DataDataname(Resource):
         if isinstance(data_name, unicode):
             data_name.encode('utf-8')
         # TODO: action
-        print(g.form['startTime'])
-        print(g.form['endTime'])
+        print(g.form['startTime'] / 1000)
+        print(g.form['endTime'] / 1000)
         print(g.form['action'])
 
         return self.render('Not Acceptable'), 405, None

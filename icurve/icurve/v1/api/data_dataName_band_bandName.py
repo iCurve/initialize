@@ -24,9 +24,9 @@ class DataDatanameBandBandname(Resource):
         start_time = None
         end_time = None
         if 'startTime' in g.args:
-            start_time = g.args['startTime']
+            start_time = g.args['startTime'] / 1000
         if 'endTime' in g.args:
-            end_time = g.args['endTime']
+            end_time = g.args['endTime'] / 1000
         if start_time is not None and end_time is None:
             end_time = data_service.get_meta().end_time
         if end_time is not None and start_time is None:
