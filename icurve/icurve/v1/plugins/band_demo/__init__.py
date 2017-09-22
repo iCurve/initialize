@@ -1,5 +1,10 @@
 # coding=utf-8
 def init_band(api):
+    """
+    初始化 band
+    :param api: 可调用的 api
+    :return: (band_name, [(start_time, end_time)])
+    """
     line = api.get_data()
     abnormal_bands = []
     for point_no, point in enumerate(sorted(line)[6:]):

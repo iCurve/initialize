@@ -17,7 +17,7 @@ class DataTestCase(IcurveTestCase):
     # 1. 特殊文件名
     # 2. 非法 csv
     # 3. 带表头的 csv
-    # 4. timestamp, value, mark 边界条件
+    # 4. timestamp, value, label 边界条件
     def test_post_data(self):
         # prepare
         data_name = str(uuid.uuid4()).replace('-', '')

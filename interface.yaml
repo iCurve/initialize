@@ -13,17 +13,17 @@ consumes:
 produces:
   - application/json
 paths:
-  '/tooltips':
+  '/menus':
     get:
       summary: 获取操作列表
       tags:
-        - tooltip
+        - menu
       description: ''
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/TooltipResponse'
+            $ref: '#/definitions/MenuResponse'
   '/datas':
     get:
       summary: 获取数据列表
@@ -85,7 +85,7 @@ paths:
     put:
       summary: 数据操作
       tags:
-        - tooltip
+        - menu
       description: ''
       parameters:
         - $ref: '#/parameters/dataName'
@@ -449,7 +449,7 @@ definitions:
         type: string
       traceId:
         type: string
-  TooltipResponse:
+  MenuResponse:
     required:
       - data
     allOf:
@@ -458,7 +458,7 @@ definitions:
           data:
             type: array
             xml:
-              name: tooltip
+              name: menu
               wrapped: true
             items:
               $ref: '#/definitions/Action'

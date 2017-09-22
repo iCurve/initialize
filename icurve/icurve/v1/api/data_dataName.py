@@ -15,7 +15,7 @@ except ImportError:
 from ..schemas import base_path
 from . import Resource
 from ..models import Data, Point, db, Band
-from ..utils import str2time, parse_mark, MARK_ENUM, time2str
+from ..utils import str2time, parse_label, LABEL_ENUM, time2str
 from ..service import DataService
 from ..exceptions import DataNotFoundException
 from ..plugins import PluginManager
@@ -53,16 +53,16 @@ class DataDataname(Resource):
                     try:
                         line = reader.next()
                         if len(line) > 2:
-                            points.append(Point(data_name, str2time(line[0]), float(line[1]), parse_mark(line[2])))
+                            points.append(Point(data_name, str2time(line[0]), float(line[1]), parse_label(line[2])))
                         elif len(line) > 1:
-                            points.append(Point(data_name, str2time(line[0]), float(line[1]), MARK_ENUM.normal))
+                            points.append(Point(data_name, str2time(line[0]), float(line[1]), LABEL_ENUM.normal))
                     except ValueError:
                         pass
                     for line in reader:
                         if len(line) > 2:
-                            points.append(Point(data_name, str2time(line[0]), float(line[1]), parse_mark(line[2])))
+                            points.append(Point(data_name, str2time(line[0]), float(line[1]), parse_label(line[2])))
                         elif len(line) > 1:
-                            points.append(Point(data_name, str2time(line[0]), float(line[1]), MARK_ENUM.normal))
+                            points.append(Point(data_name, str2time(line[0]), float(line[1]), LABEL_ENUM.normal))
                 except Exception as e:
                     return {'msg': 'line %d: %s' % (line_no, e.message), 'traceId': '', 'server': 'something'}, 422, {}
                 if len(points) < 2:
@@ -85,7 +85,7 @@ class DataDataname(Resource):
                 period = periods[len(periods) / 2]
                 end_time += period
                 period_ratio = sum([1 for x in periods if x == period]) * 1. / len(periods)
-                label_ratio = sum([1 for point in points if point.mark]) * 1. / len(points)
+                label_ratio = sum([1 for point in points if point.label]) * 1. / len(points)
                 create_time = int(time.time())
                 update_time = create_time
                 data = Data(data_name, start_time, end_time, period, period_ratio, label_ratio, create_time, update_time)
@@ -127,12 +127,16 @@ class DataDataname(Resource):
         data_name = dataName
         if isinstance(data_name, unicode):
             data_name.encode('utf-8')
-        # TODO: action
-        print(g.form['startTime'] / 1000)
-        print(g.form['endTime'] / 1000)
-        print(g.form['action'])
+        data_service = DataService(data_name)
+        plugin = PluginManager(data_service)
 
-        return self.render('Not Acceptable'), 405, None
+        start_time = g.form['startTime'] / 1000
+        end_time = g.form['endTime'] / 1000
+        action = g.form['action']
+
+        res = plugin(action, start_time, end_time)
+
+        return self.render(data=res), 200, None
 
     def delete(self, dataName):
         data_name = dataName

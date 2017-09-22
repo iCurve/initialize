@@ -1,3 +1,4 @@
+# coding=utf-8
 import importlib
 import os
 import inspect
@@ -9,14 +10,14 @@ from flask import current_app
 
 from ..exceptions import DataNotFoundException
 from ..service import DataService
-from ..utils import enum, MARK_ENUM
+from ..utils import enum, LABEL_ENUM
 
 
 class API(object):
 
     DAY = 86400
     WEEK = 604800
-    MARK_ENUM = MARK_ENUM
+    LABEL_ENUM = LABEL_ENUM
 
     def __init__(self, data):
         if isinstance(data, str):
@@ -29,10 +30,30 @@ class API(object):
             raise DataNotFoundException
 
     def get_data(self, start_time=None, end_time=None):
+        """
+        获取数据
+        :param start_time: 开始时间
+        :param end_time: 结束时间
+        :return: [(timestamp, value, label)]
+        """
         return self.data_service.get_line(start_time, end_time)
 
     def get_meta(self):
+        """
+        获取 meta 信息
+        :return: Meta(name, start_time, end_time, period)
+        """
         return self.data_service.get_meta()
+
+    def set_label(self, start_time, end_time, label):
+        """
+        设置 label
+        :param start_time: 开始时间
+        :param end_time: 结束时间
+        :param label: label 内容 MARK_ENUM.normal MARK_ENUM.abnormal
+        :return:
+        """
+        return self.data_service.set_label(start_time, end_time, label)
 
 
 class PluginManager(object):
@@ -47,29 +68,31 @@ class PluginManager(object):
     __ins = None
     plugin_dir = path.abspath(path.join(path.dirname(inspect.getfile(inspect.currentframe())), '.'))
     plugins = None
+    menus = None
 
     def __init__(self, data):
         self.api = API(data)
 
-    def __get_plugins(self):
-        if self.plugins is None:
-            self.plugins = {}
-            for plugin in os.listdir(self.plugin_dir):
-                if path.exists(path.join(self.plugin_dir, plugin, "__init__.py")):
+    @staticmethod
+    def __get_plugins():
+        if PluginManager.plugins is None:
+            PluginManager.plugins = {}
+            for plugin in os.listdir(PluginManager.plugin_dir):
+                if path.exists(path.join(PluginManager.plugin_dir, plugin, "__init__.py")):
                     plugin_path = '.'.join([current_app.root_path.split(os.sep)[-1], 'v1', 'plugins', plugin])
                     plugin = importlib.import_module(plugin_path)
-                    self.plugins[plugin.__name__] = plugin
-        return self.plugins
+                    PluginManager.plugins[plugin.__name__] = plugin
+        return PluginManager.plugins
 
     def __call__(self, method, *args):
         res = []
         if method in self.PLUGIN_METHOD:
             if self.PLUGIN_METHOD[method] == self.PLUGIN_TYPE.SINGLE:
-                for _, plugin in sorted(self.__get_plugins().items()):
+                for _, plugin in sorted(PluginManager.__get_plugins().items()):
                     if method in plugin.__dict__ and isinstance(plugin.__dict__[method], FunctionType):
                         return getattr(plugin, method)(self.api, *args)
             else:
-                for _, plugin in sorted(self.__get_plugins().items()):
+                for _, plugin in sorted(PluginManager.__get_plugins().items()):
                     if method in plugin.__dict__ and isinstance(plugin.__dict__[method], FunctionType):
                         output = getattr(plugin, method)(self.api, *args)
                         if output is not None:
@@ -84,3 +107,15 @@ class PluginManager(object):
 
     def reference(self, line):
         return self('reference', line)
+
+    @staticmethod
+    def get_menus():
+        if PluginManager.menus is None:
+            PluginManager.menus = []
+            method = 'menus'
+            for _, plugin in sorted(PluginManager.__get_plugins().items()):
+                if method in plugin.__dict__ and isinstance(plugin.__dict__[method], FunctionType):
+                    output = getattr(plugin, method)()
+                    if output is not None:
+                        PluginManager.menus.extend(output)
+        return PluginManager.menus

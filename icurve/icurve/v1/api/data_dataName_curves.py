@@ -2,11 +2,11 @@
 from __future__ import absolute_import, print_function
 
 import urllib
-from operator import itemgetter
 
 from flask import g
 
-from ..utils import s2ms
+from ..exceptions import DataNotFoundException
+from ..utils import s2ms, LABEL_ENUM
 from ..plugins import PluginManager
 from ..service import DataService
 from ..models import db, Band
@@ -17,27 +17,53 @@ from .. import schemas
 class DataDatanameCurves(Resource):
 
     def get(self, dataName):
-        trends = []
+        # 参数解析
         data_name = dataName
         if isinstance(data_name, unicode):
             data_name = data_name.encode('utf-8')
-        data_service = DataService(data_name)
+        try:
+            data_service = DataService(data_name)
+        except DataNotFoundException:
+            return self.render(msg='%s not found' % data_name), 404, None
         plugin = PluginManager(data_service)
         start_time = g.args['startTime'] / 1000
         end_time = g.args['endTime'] / 1000
+        period = data_service.get_meta().period
 
+        # 原始数据获取
         line = data_service.get_data(start_time, end_time)
         _, line = plugin.sampling(line)
 
+        raw_line = {
+            'name': '原始曲线',
+            'type': 'line',
+            'data': s2ms([point[:2] for point in line])
+        }
+
+        # 标注曲线计算
+        label_line = []
+        for point in line:
+            if point[2] == LABEL_ENUM.abnormal:
+                label_line.append((point[:2]))
+            else:
+                label_line.append((point[0], None))
+        label_line = {
+            'name': '标注曲线',
+            'type': 'line',
+            'data': s2ms(label_line)
+        }
+
         y_axis = [float('inf'), float('-inf')]
 
+        # y 轴计算
         values = [point[1] for point in line if point[1] is not None]
         if len(values) > 0:
             y_axis[1] = max(y_axis[1], max(values))
             y_axis[0] = min(y_axis[1], min(values))
 
+        # 参考线计算
         refs = plugin.reference(line)
-
+        ref_lines = []
         for ref_name, ref in refs:
             if len(ref) > 0 and len(ref[0]) == 2:
                 ref_type = 'line'
@@ -51,7 +77,7 @@ class DataDatanameCurves(Resource):
             if len(values) > 0:
                 y_axis[1] = max(y_axis[1], max(values))
                 y_axis[0] = min(y_axis[0], min(values))
-            trends.append({
+            ref_lines.append({
                 'name': ref_name,
                 'type': ref_type,
                 'data': ref
@@ -68,33 +94,27 @@ class DataDatanameCurves(Resource):
         if y_axis[0] != 0:
             y_axis[0] -= 0.1 * length
 
-        # 原始曲线
-        trends.append({
-            'name': '原始曲线',
-            'type': 'line',
-            'data': s2ms(line)
-        })
-        # 标注曲线
-        trends.append({
-            'name': '标注曲线',
-            'type': 'line',
-            'data': s2ms(line)
-        })
-
         bands = []
+        band_lines = []
         band_names = db.session.query(db.distinct(Band.name)).all()
         for band_name, in band_names:
             # 色块渲染
             band_name = urllib.unquote(band_name.encode('utf-8'))
             band_items = data_service.get_band(band_name, start_time, end_time)
-            line = []
+            tmp = set([])
             for band_item in band_items:
-                for x in range(band_item[0], band_item[1], data_service.get_meta().period):
-                    line.append([x, y_axis[1]])
-            trends.append({
+                for x in range(band_item[0], band_item[1] + period, period):
+                    tmp.add(x)
+            band_line = []
+            for point in line:
+                if point[0] in tmp:
+                    band_line.append([point[0], y_axis[1]])
+                else:
+                    band_line.append([point[0], None])
+            band_lines.append({
                 'name': band_name,
                 'type': 'area',
-                'data': s2ms(line)
+                'data': s2ms(band_line)
             })
 
             # band tool 渲染
@@ -123,6 +143,9 @@ class DataDatanameCurves(Resource):
                 'name': band_name,
                 'bands': band_items
             })
+
+        # trend 拼装
+        trends = ref_lines + [raw_line] + [label_line] + band_lines
 
         return self.render(data={
             'trends': trends,

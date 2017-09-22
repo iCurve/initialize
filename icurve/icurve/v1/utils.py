@@ -1,12 +1,13 @@
 # coding=utf-8
 import time
+import math
 
 
 def enum(**enums):
     return type('Enum', (), enums)
 
 
-MARK_ENUM = enum(normal=0, abnormal=1, unknown=-1)
+LABEL_ENUM = enum(normal=0, abnormal=1, unknown=-1)
 REPR_FILTER = {'_sa_instance_state'}
 DEFAULT_TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -22,11 +23,11 @@ def str2time(time_str):
     return int(time_str)
 
 
-def parse_mark(mark_str):
-    mark = int(mark_str)
-    if mark not in {MARK_ENUM.normal, MARK_ENUM.abnormal}:
-        raise Exception('mark %s not valid.' % mark_str)
-    return mark
+def parse_label(label_str):
+    label = int(label_str)
+    if label not in {LABEL_ENUM.normal, LABEL_ENUM.abnormal}:
+        raise Exception('label %s not valid.' % label_str)
+    return label
 
 
 def repr_p(obj):
@@ -35,6 +36,21 @@ def repr_p(obj):
 
 
 def s2ms(data):
-    for key, point in enumerate(data):
-        data[key][0] *= 1000
-    return data
+    res = []
+    for point in data:
+        point = list(point)
+        point[0] *= 1000
+        res.append(point)
+    return res
+
+
+def floor(data, base=None):
+    if base is None or base == 0:
+        return math.floor(data)
+    return int(math.floor(data / base) * base)
+
+
+def ceil(data, base=None):
+    if base is None or base == 0:
+        return math.floor(data)
+    return int(math.ceil(data / base) * base)

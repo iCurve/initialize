@@ -16,9 +16,9 @@ DefinitionsCommonresponse = {'required': ['msg', 'server', 'traceId'], 'descript
 DefinitionsAction = {'properties': {'action': {'enum': ['foo'], 'type': 'string'}, 'name': {'enum': [u'\u5360\u4f4d\u64cd\u4f5c'], 'type': 'string'}}}
 DefinitionsTrend = {'required': ['name', 'type', 'data'], 'properties': {'type': {'type': 'string'}, 'data': {'xml': {'wrapped': True, 'name': 'point'}, 'items': {'xml': {'wrapped': True, 'name': 'value'}, 'minItems': 2, 'type': 'array', 'maxItems': 3, 'items': {'type': 'number'}}, 'type': 'array'}, 'name': {'type': 'string'}}}
 DefinitionsTime = {'type': 'integer', 'description': u'unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7', 'format': 'int64'}
+DefinitionsMenuresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': {'xml': {'wrapped': True, 'name': 'menu'}, 'items': DefinitionsAction, 'type': 'array'}}}]}
 DefinitionsThumbresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': DefinitionsTrend}}]}
 DefinitionsTimeslot = {'required': ['start', 'end'], 'description': u'\u65f6\u95f4\u6bb5', 'properties': {'start': DefinitionsTime, 'end': DefinitionsTime}}
-DefinitionsTooltipresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': {'xml': {'wrapped': True, 'name': 'tooltip'}, 'items': DefinitionsAction, 'type': 'array'}}}]}
 DefinitionsBandtime = {'required': ['duration', 'show'], 'properties': {'duration': DefinitionsTimeslot, 'show': DefinitionsTimeslot}}
 DefinitionsMeta = {'required': ['id', 'name', 'uri', 'time', 'period', 'labelRatio'], 'description': u'\u6570\u636e\u7684\u5143\u4fe1\u606f', 'properties': {'updateTime': DefinitionsTime, 'name': {'type': 'string'}, 'uri': {'type': 'string', 'description': u'\u4e0b\u8f7d\u6570\u636e\u7684url'}, 'period': {'required': ['length', 'ratio'], 'description': u'\u6570\u636e\u7684\u5468\u671f', 'properties': {'length': {'type': 'integer', 'description': u'\u6570\u636e\u7684\u5468\u671f\uff0c\u5355\u4f4d\uff1a\u79d2', 'format': 'int64'}, 'ratio': {'type': 'number', 'description': u'\u7b26\u5408\u5468\u671f\u7684\u6570\u636e\u5360\u6bd4', 'format': 'float'}}}, 'labelRatio': {'type': 'number', 'description': u'\u6807\u6ce8\u6570\u636e\u7684\u5360\u6bd4', 'format': 'float'}, 'time': DefinitionsTimeslot, 'id': {'type': 'integer', 'format': 'int64'}, 'createTime': DefinitionsTime}}
 DefinitionsDatametaresponse = {'required': ['data'], 'allOf': [DefinitionsCommonresponse, {'properties': {'data': DefinitionsMeta}}]}
@@ -41,7 +41,6 @@ filters = {
     ('data_dataName_label', 'PUT'): {200: {'headers': None, 'schema': DefinitionsCommonresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}, 422: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName_band_bandName', 'GET'): {200: {'headers': None, 'schema': DefinitionsBandresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName_band_bandName', 'DELETE'): {200: {'headers': None, 'schema': DefinitionsCommonresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
-    ('tooltips', 'GET'): {200: {'headers': None, 'schema': DefinitionsTooltipresponse}},
     ('data_dataName', 'PUT'): {200: {'headers': None, 'schema': DefinitionsCommonresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}, 422: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName', 'POST'): {201: {'headers': {'Location': {'type': 'string', 'description': u'\u6570\u636e uri'}}, 'schema': DefinitionsDatametaresponse}, 422: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName', 'GET'): {200: {'headers': None, 'schema': {'type': 'file'}}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
@@ -49,6 +48,7 @@ filters = {
     ('datas', 'GET'): {200: {'headers': None, 'schema': DefinitionsDatalistresponse}},
     ('data_dataName_thumb', 'GET'): {200: {'headers': None, 'schema': DefinitionsThumbresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
     ('data_dataName_curves', 'GET'): {200: {'headers': None, 'schema': DefinitionsTrendresponse}, 404: {'headers': None, 'schema': DefinitionsCommonresponse}},
+    ('menus', 'GET'): {200: {'headers': None, 'schema': DefinitionsMenuresponse}},
 }
 
 scopes = {

@@ -16,11 +16,10 @@ class DataDatanameLabel(Resource):
         if isinstance(data_name, unicode):
             data_name = data_name.encode('utf-8')
         data_service = DataService(data_name)
+        start_time = g.args['startTime'] / 1000
+        end_time = g.args['endTime'] / 1000
+        label = g.args['label']
 
-        Point.query.filter(db.and_(
-            Point.data_name.is_(data_name),
-            Point.timestamp.between(g.args['startTime'] / 1000, g.args['endTime'] / 1000)
-        )).update({Point.mark: g.args['label']}, synchronize_session=False)
-        db.session.commit()
+        data_service.set_label(start_time, end_time, label)
 
         return self.render(), 200, None

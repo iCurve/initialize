@@ -191,7 +191,7 @@
           }
         }, 
         "tags": [
-          "tooltip"
+          "menu"
         ], 
         "description": "", 
         "parameters": [
@@ -237,7 +237,7 @@
             }, 
             "description": "OK", 
             "schema": {
-              "$ref": "#/definitions/CommonResponse"
+              "$ref": "#/definitions/DataMetaResponse"
             }
           }, 
           "422": {
@@ -310,18 +310,18 @@
         }
       }
     }, 
-    "/tooltips": {
+    "/menus": {
       "get": {
         "responses": {
           "200": {
             "description": "OK", 
             "schema": {
-              "$ref": "#/definitions/TooltipResponse"
+              "$ref": "#/definitions/MenuResponse"
             }
           }
         }, 
         "tags": [
-          "tooltip"
+          "menu"
         ], 
         "description": "", 
         "summary": "\u83b7\u53d6\u64cd\u4f5c\u5217\u8868"
@@ -489,23 +489,10 @@
         }, 
         "name": {
           "type": "string"
-        }, 
-        "yAxis": {
-          "xml": {
-            "wrapped": true, 
-            "name": "value"
-          }, 
-          "minItems": 2, 
-          "type": "array", 
-          "maxItems": 2, 
-          "items": {
-            "type": "number", 
-            "format": "float"
-          }
         }
       }
     }, 
-    "TooltipResponse": {
+    "DataMetaResponse": {
       "required": [
         "data"
       ], 
@@ -516,14 +503,7 @@
         {
           "properties": {
             "data": {
-              "xml": {
-                "wrapped": true, 
-                "name": "tooltip"
-              }, 
-              "items": {
-                "$ref": "#/definitions/Action"
-              }, 
-              "type": "array"
+              "$ref": "#/definitions/Meta"
             }
           }
         }
@@ -564,6 +544,11 @@
         {
           "properties": {
             "data": {
+              "required": [
+                "trends", 
+                "bands", 
+                "yAxis"
+              ], 
               "properties": {
                 "bands": {
                   "items": {
@@ -576,6 +561,19 @@
                     "$ref": "#/definitions/Trend"
                   }, 
                   "type": "array"
+                }, 
+                "yAxis": {
+                  "xml": {
+                    "wrapped": true, 
+                    "name": "value"
+                  }, 
+                  "minItems": 2, 
+                  "type": "array", 
+                  "maxItems": 2, 
+                  "items": {
+                    "type": "number", 
+                    "format": "float"
+                  }
                 }
               }
             }
@@ -600,20 +598,10 @@
         }
       ]
     }, 
-    "TimeSlot": {
-      "required": [
-        "start", 
-        "end"
-      ], 
-      "description": "\u65f6\u95f4\u6bb5", 
-      "properties": {
-        "start": {
-          "$ref": "#/definitions/Time"
-        }, 
-        "end": {
-          "$ref": "#/definitions/Time"
-        }
-      }
+    "Time": {
+      "type": "integer", 
+      "description": "unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7", 
+      "format": "int64"
     }, 
     "BandItems": {
       "xml": {
@@ -624,11 +612,12 @@
         "required": [
           "bandNo", 
           "bandCount", 
-          "currentTime"
+          "currentTime", 
+          "reliablity"
         ], 
         "properties": {
           "nextTime": {
-            "$ref": "#/definitions/BandTime"
+            "$ref": "#/definitions/TimeSlot"
           }, 
           "currentTime": {
             "$ref": "#/definitions/BandTime"
@@ -639,7 +628,7 @@
             "format": "float"
           }, 
           "preTime": {
-            "$ref": "#/definitions/BandTime"
+            "$ref": "#/definitions/TimeSlot"
           }, 
           "bandNo": {
             "type": "integer", 
@@ -670,6 +659,30 @@
         }
       ]
     }, 
+    "MenuResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "xml": {
+                "wrapped": true, 
+                "name": "menu"
+              }, 
+              "items": {
+                "$ref": "#/definitions/Action"
+              }, 
+              "type": "array"
+            }
+          }
+        }
+      ]
+    }, 
     "CommonResponse": {
       "required": [
         "msg", 
@@ -691,7 +704,8 @@
     }, 
     "BandTime": {
       "required": [
-        "duration"
+        "duration", 
+        "show"
       ], 
       "properties": {
         "duration": {
@@ -704,7 +718,12 @@
     }, 
     "Meta": {
       "required": [
-        "name"
+        "id", 
+        "name", 
+        "uri", 
+        "time", 
+        "period", 
+        "labelRatio"
       ], 
       "description": "\u6570\u636e\u7684\u5143\u4fe1\u606f", 
       "properties": {
@@ -754,10 +773,20 @@
         }
       }
     }, 
-    "Time": {
-      "type": "integer", 
-      "description": "unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7", 
-      "format": "int64"
+    "TimeSlot": {
+      "required": [
+        "start", 
+        "end"
+      ], 
+      "description": "\u65f6\u95f4\u6bb5", 
+      "properties": {
+        "start": {
+          "$ref": "#/definitions/Time"
+        }, 
+        "end": {
+          "$ref": "#/definitions/Time"
+        }
+      }
     }, 
     "Action": {
       "properties": {
@@ -776,6 +805,10 @@
       }
     }, 
     "BandCategory": {
+      "required": [
+        "name", 
+        "bands"
+      ], 
       "properties": {
         "bands": {
           "$ref": "#/definitions/BandItems"

@@ -1,5 +1,11 @@
 # coding=utf-8
 def reference(api, line):
+    """
+    参考区域样例
+    :param api: 可调用的 api
+    :param line: [(timestamp, value...)]
+    :return: [(timestamp, y_lower, y_upper)]
+    """
     result = []
 
     if len(line) > 0:

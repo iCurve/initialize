@@ -1,10 +1,9 @@
 import urllib
-from operator import itemgetter
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from .utils import MARK_ENUM
-from .exceptions import DataNotFoundException
+from .utils import LABEL_ENUM
+from .exceptions import DataNotFoundException, UnprocessableException
 from .models import Data, Point, db, Band
 
 
@@ -57,7 +56,7 @@ class DataService(object):
                 )).all()
                 if start_time <= self.data.start_time and end_time >= self.data.end_time:
                     self.points = points
-            line = [[point.timestamp, point.value, point.mark] for point in points]
+            line = [[point.timestamp, point.value, point.label] for point in points]
             timestamps = {point.timestamp for point in points}
             for timestamp in range(start_time, end_time, self.data.period):
                 if timestamp not in timestamps:
@@ -102,7 +101,7 @@ class DataService(object):
                 points = Point.query.filter(db.and_(
                     Point.data_name.is_(self.data_name),
                     Point.timestamp.between(start_time, end_time),
-                    Point.mark.isnot(MARK_ENUM.normal)
+                    Point.label.isnot(LABEL_ENUM.normal)
                 )).all()
                 if start_time <= self.data.start_time and end_time >= self.data.end_time:
                     self.points = points
@@ -115,6 +114,19 @@ class DataService(object):
 
         return self.cache['label']
 
+    def set_label(self, start_time, end_time, label):
+        if label != LABEL_ENUM.normal and label != LABEL_ENUM.abnormal:
+            raise UnprocessableException('invalid label')
+        if start_time is None or start_time < self.data.start_time:
+            start_time = self.data.start_time
+        if end_time is None or end_time > self.data.end_time:
+            end_time = self.data.end_time
+        Point.query.filter(db.and_(
+            Point.data_name.is_(self.data_name),
+            Point.timestamp.between(start_time, end_time)
+        )).update({Point.label: label}, synchronize_session=False)
+        db.session.commit()
+
     def get_band(self, band_name, start_time=None, end_time=None):
         band_name = urllib.quote(band_name)
         query = Band.query.filter_by(data_name=self.data_name, name=band_name)
@@ -125,6 +137,11 @@ class DataService(object):
         bands = [(band.start_time, band.end_time, band.reliablity) for band in bands]
 
         return bands
+
+    def set_band(self, band_name, start_time, end_time, reliablity):
+        band = Band(self.data_name, band_name, start_time, end_time, reliablity)
+        db.session.add(band)
+        db.session.commit()
 
     def delete(self):
         Data.query.filter_by(name=self.data_name).delete(synchronize_session=False)

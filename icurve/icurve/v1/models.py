@@ -38,13 +38,13 @@ class Point(db.Model):
     data_name = db.Column(db.String(50), nullable=False)  # 外键？
     timestamp = db.Column(db.Integer, nullable=False)
     value = db.Column(db.Float, nullable=True)
-    mark = db.Column(db.Integer, nullable=False, default=-1)
+    label = db.Column(db.Integer, nullable=False, default=-1)
 
-    def __init__(self, data_name, timestamp, value, mark):
+    def __init__(self, data_name, timestamp, value, label):
         self.data_name = data_name
         self.timestamp = timestamp
         self.value = value
-        self.mark = mark
+        self.label = label
 
     def __repr__(self):
         return repr_p(self)
@@ -53,10 +53,12 @@ class Point(db.Model):
 class Band(db.Model):
     __tablename__ = 'band'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    data_name = db.Column(db.String(50), nullable=False)  # 外键？
-    name = db.Column(db.String(50), nullable=False)
+    data_name = db.Column(db.String, nullable=False)  # 外键？
+    name = db.Column(db.String, nullable=False)
     start_time = db.Column(db.Integer, nullable=False)
     end_time = db.Column(db.Integer, nullable=False)
+    # TODO: tooltips comment
+    # comment = db.Column(db.Text, nullable=False)
     reliablity = db.Column(db.Float, nullable=True)
 
     def __init__(self, data_name, name, start_time, end_time, reliablity):
