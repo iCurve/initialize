@@ -1,0 +1,531 @@
+swagger: '2.0'
+info:
+  title: 标注工具接口
+  description: 针对时序数据异常标注工具的 web 前后端交互接口
+  version: 0.1.2
+host: 'cp01-oda1.epc:8081'
+schemes:
+  - https
+  - http
+basePath: /v1
+consumes:
+  - application/form-data
+produces:
+  - application/json
+paths:
+  '/menus':
+    get:
+      summary: 获取操作列表
+      tags:
+        - menu
+      description: ''
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/MenuResponse'
+  '/datas':
+    get:
+      summary: 获取数据列表
+      tags:
+        - data
+      description: 用来展示已经加载到工具中的数据，当前主要展示的字段为数据的名称，后续需要包含数据的 meta 信息
+      parameters:
+        - name: pattern
+          in: query
+          description: 数据名称匹配规则
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/DataListResponse'
+  '/data/{dataName}':
+    post:
+      summary: 上传数据
+      tags:
+        - data
+      description: 用来将数据上传到工具进行加载，上传后会进行 meta 数据计算
+      consumes:
+        - multipart/form-data
+      parameters:
+        - $ref: '#/parameters/dataName'
+        - $ref: '#/parameters/file'
+      responses:
+        '201':
+          description: OK
+          headers:
+            Location:
+              description: 数据 uri
+              type: string
+          schema:
+            $ref: '#/definitions/DataMetaResponse'
+        '422':
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/CommonResponse'
+    get:
+      summary: 下载数据
+      tags:
+        - data
+      description: 用来从工具中导出已标注的数据，当前数据格式与上传的数据相同
+      parameters:
+        - $ref: '#/parameters/dataName'
+      produces:
+        - multipart/form-data
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: file
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+    put:
+      summary: 数据操作
+      tags:
+        - menu
+      description: ''
+      parameters:
+        - $ref: '#/parameters/dataName'
+        - $ref: '#/parameters/startTime'
+        - $ref: '#/parameters/endTime'
+        - $ref: '#/parameters/action'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '422':
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/CommonResponse'
+    delete:
+      summary: 删除数据
+      tags:
+        - data
+      description: ''
+      parameters:
+        - $ref: '#/parameters/dataName'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '405':
+          description: Not Acceptable
+          schema:
+            $ref: '#/definitions/CommonResponse'
+  '/data/{dataName}/curves':
+    get:
+      summary: 获取指定时间窗口内的原始、参考线、标注数据和 bands
+      tags:
+        - trend
+        - label
+      description: ''
+      parameters:
+        - $ref: '#/parameters/dataName'
+        - $ref: '#/parameters/startTime'
+        - $ref: '#/parameters/endTime'
+        - name: bandName
+          description: band名称
+          in: query
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/TrendResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+  '/data/{dataName}/thumb':
+    get:
+      summary: 获取缩略图
+      tags:
+        - trend
+      description: 用来获取数据的缩略图
+      parameters:
+        - $ref: '#/parameters/dataName'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ThumbResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+  '/data/{dataName}/label':
+    put:
+      summary: 标注
+      tags:
+        - label
+      description: 用来设置指定时间窗口内标注为特定值(正常/异常/不确定)
+      parameters:
+        - $ref: '#/parameters/dataName'
+        - $ref: '#/parameters/startTime'
+        - $ref: '#/parameters/endTime'
+        - $ref: '#/parameters/label'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '422':
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/CommonResponse'
+  '/data/{dataName}/band/{bandName}':
+    get:
+      summary: 用来获取某类 band
+      tags:
+        - band
+      description: ''
+      parameters:
+        - $ref: '#/parameters/dataName'
+        - $ref: '#/parameters/bandName'
+        - name: startTime
+          description: 开始时间(unix时间戳，毫秒级)
+          in: query
+          type: integer
+          format: int64
+          default: 0
+        - name: endTime
+          description: 结束时间(unix时间戳，毫秒级)
+          in: query
+          type: integer
+          format: int64
+          default: 0
+        - $ref: '#/parameters/bandOrder'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/BandResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+    delete:
+      summary: 用来删除某类 band
+      tags:
+        - band
+      description: ''
+      parameters:
+        - $ref: '#/parameters/dataName'
+        - $ref: '#/parameters/bandName'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponse'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/CommonResponse'
+
+parameters:
+  dataName:
+    description: 数据名称
+    name: dataName
+    in: path
+    required: true
+    type: string
+  file:
+    name: file
+    in: formData
+    description: 原始数据文件
+    type: file
+  bandName:
+    description: band名称
+    name: bandName
+    in: path
+    required: true
+    type: string
+  startTime:
+    description: 开始时间(unix时间戳，毫秒级)
+    name: startTime
+    in: query
+    required: true
+    type: integer
+    format: int64
+  endTime:
+    description: 结束时间(unix时间戳，毫秒级)
+    name: endTime
+    in: query
+    required: true
+    type: integer
+    format: int64
+  action:
+    description: 数据操作名称
+    name: action
+    in: query
+    required: true
+    type: string
+    enum:
+      - foo
+  label:
+    description: 标注类型
+    name: label
+    in: query
+    required: true
+    type: integer
+    format: int64
+    enum:
+      - 0
+      - 1
+      - -1
+  bandOrder:
+    name: order
+    in: query
+    description: 排序依据
+    type: string
+    enum:
+      - time
+      - reliablity
+    default: time
+definitions:
+  Action:
+    properties:
+      name:
+        type: string
+        enum:
+          - 占位操作
+      action:
+        type: string
+        enum:
+          - foo
+  Time:
+    description: unix时间戳，毫秒级
+    type: integer
+    format: int64
+  TimeSlot:
+    description: 时间段
+    required:
+      - start
+      - end
+    properties:
+      start:
+        $ref: '#/definitions/Time'
+      end:
+        $ref: '#/definitions/Time'
+  Meta:
+    description: 数据的元信息
+    required:
+      - id
+      - name
+      - uri
+      - time
+      - period
+      - labelRatio
+    properties:
+      id:
+        type: integer
+        format: int64
+      name:
+        type: string
+      uri:
+        description: 下载数据的url
+        type: string
+      time:
+        $ref: '#/definitions/TimeSlot'
+      period:
+        description: 数据的周期
+        required:
+          - length
+          - ratio
+        properties:
+          length:
+            description: 数据的周期，单位：秒
+            type: integer
+            format: int64
+          ratio:
+            description: 符合周期的数据占比
+            type: number
+            format: float
+      labelRatio:
+        description: 标注数据的占比
+        type: number
+        format: float
+      createTime:
+        $ref: '#/definitions/Time'
+      updateTime:
+        $ref: '#/definitions/Time'
+  Trend:
+    required:
+      - name
+      - type
+      - data
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+      data:
+        type: array
+        xml:
+          name: point
+          wrapped: true
+        items:
+          type: array
+          xml:
+            name: value
+            wrapped: true
+          minItems: 2
+          maxItems: 3
+          items:
+            type: number
+  BandTime:
+    required:
+      - duration
+      - show
+    properties:
+      duration:
+        $ref: '#/definitions/TimeSlot'
+      show:
+        $ref: '#/definitions/TimeSlot'
+  BandItems:
+    type: array
+    xml:
+      name: band
+      wrapped: true
+    items:
+      required:
+        - bandNo
+        - bandCount
+        - currentTime
+        - reliablity
+      properties:
+        bandNo:
+          type: integer
+          format: int64
+        bandCount:
+          type: integer
+          format: int64
+        currentTime:
+          $ref: '#/definitions/BandTime'
+        preTime:
+          $ref: '#/definitions/TimeSlot'
+        nextTime:
+          $ref: '#/definitions/TimeSlot'
+        reliablity:
+          description: 描述所生成 band 的可信程度
+          type: number
+          format: float
+  BandCategory:
+    required:
+      - name
+      - bands
+    properties:
+      name:
+        type: string
+      bands:
+        $ref: '#/definitions/BandItems'
+  CommonResponse:
+    description: 返回值的通用字段
+    required:
+      - msg
+      - server
+      - traceId
+    properties:
+      msg:
+        type: string
+      server:
+        type: string
+      traceId:
+        type: string
+  MenuResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            type: array
+            xml:
+              name: menu
+              wrapped: true
+            items:
+              $ref: '#/definitions/Action'
+  DataMetaResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            $ref: '#/definitions/Meta'
+  DataListResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            type: array
+            xml:
+              name: meta
+              wrapped: true
+            items:
+              $ref: '#/definitions/Meta'
+  TrendResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            required:
+              - trends
+              - bands
+              - yAxis
+            properties:
+              trends:
+                type: array
+                items:
+                  $ref: '#/definitions/Trend'
+              bands:
+                type: array
+                items:
+                  $ref: '#/definitions/BandCategory'
+              yAxis:
+                type: array
+                xml:
+                  name: value
+                  wrapped: true
+                minItems: 2
+                maxItems: 2
+                items:
+                  type: number
+                  format: float
+  ThumbResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            $ref: '#/definitions/Trend'
+  BandResponse:
+    required:
+      - data
+    allOf:
+      - $ref: '#/definitions/CommonResponse'
+      - properties:
+          data:
+            $ref: '#/definitions/BandItems'

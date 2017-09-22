@@ -1,0 +1,826 @@
+{
+  "info": {
+    "version": "0.1.2", 
+    "description": "\u9488\u5bf9\u65f6\u5e8f\u6570\u636e\u5f02\u5e38\u6807\u6ce8\u5de5\u5177\u7684 web \u524d\u540e\u7aef\u4ea4\u4e92\u63a5\u53e3", 
+    "title": "\u6807\u6ce8\u5de5\u5177\u63a5\u53e3"
+  }, 
+  "paths": {
+    "/data/{dataName}/label": {
+      "put": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "422": {
+            "description": "Unprocessable Entity", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "label"
+        ], 
+        "description": "\u7528\u6765\u8bbe\u7f6e\u6307\u5b9a\u65f6\u95f4\u7a97\u53e3\u5185\u6807\u6ce8\u4e3a\u7279\u5b9a\u503c(\u6b63\u5e38/\u5f02\u5e38/\u4e0d\u786e\u5b9a)", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }, 
+          {
+            "$ref": "#/parameters/startTime"
+          }, 
+          {
+            "$ref": "#/parameters/endTime"
+          }, 
+          {
+            "$ref": "#/parameters/label"
+          }
+        ], 
+        "summary": "\u6807\u6ce8"
+      }
+    }, 
+    "/data/{dataName}/band/{bandName}": {
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "band"
+        ], 
+        "description": "", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }, 
+          {
+            "$ref": "#/parameters/bandName"
+          }
+        ], 
+        "summary": "\u7528\u6765\u5220\u9664\u67d0\u7c7b band"
+      }, 
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/BandResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "band"
+        ], 
+        "description": "", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }, 
+          {
+            "$ref": "#/parameters/bandName"
+          }, 
+          {
+            "description": "\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
+            "format": "int64", 
+            "default": 0, 
+            "in": "query", 
+            "type": "integer", 
+            "name": "startTime"
+          }, 
+          {
+            "description": "\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
+            "format": "int64", 
+            "default": 0, 
+            "in": "query", 
+            "type": "integer", 
+            "name": "endTime"
+          }, 
+          {
+            "$ref": "#/parameters/bandOrder"
+          }
+        ], 
+        "summary": "\u7528\u6765\u83b7\u53d6\u67d0\u7c7b band"
+      }
+    }, 
+    "/data/{dataName}/curves": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/TrendResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "trend", 
+          "label"
+        ], 
+        "description": "", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }, 
+          {
+            "$ref": "#/parameters/startTime"
+          }, 
+          {
+            "$ref": "#/parameters/endTime"
+          }, 
+          {
+            "in": "query", 
+            "type": "string", 
+            "description": "band\u540d\u79f0", 
+            "name": "bandName"
+          }
+        ], 
+        "summary": "\u83b7\u53d6\u6307\u5b9a\u65f6\u95f4\u7a97\u53e3\u5185\u7684\u539f\u59cb\u3001\u53c2\u8003\u7ebf\u3001\u6807\u6ce8\u6570\u636e\u548c bands"
+      }
+    }, 
+    "/data/{dataName}": {
+      "put": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "422": {
+            "description": "Unprocessable Entity", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "menu"
+        ], 
+        "description": "", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }, 
+          {
+            "$ref": "#/parameters/startTime"
+          }, 
+          {
+            "$ref": "#/parameters/endTime"
+          }, 
+          {
+            "$ref": "#/parameters/action"
+          }
+        ], 
+        "summary": "\u6570\u636e\u64cd\u4f5c"
+      }, 
+      "post": {
+        "description": "\u7528\u6765\u5c06\u6570\u636e\u4e0a\u4f20\u5230\u5de5\u5177\u8fdb\u884c\u52a0\u8f7d\uff0c\u4e0a\u4f20\u540e\u4f1a\u8fdb\u884c meta \u6570\u636e\u8ba1\u7b97", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }, 
+          {
+            "$ref": "#/parameters/file"
+          }
+        ], 
+        "tags": [
+          "data"
+        ], 
+        "summary": "\u4e0a\u4f20\u6570\u636e", 
+        "consumes": [
+          "multipart/form-data"
+        ], 
+        "responses": {
+          "201": {
+            "headers": {
+              "Location": {
+                "type": "string", 
+                "description": "\u6570\u636e uri"
+              }
+            }, 
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/DataMetaResponse"
+            }
+          }, 
+          "422": {
+            "description": "Unprocessable Entity", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }
+      }, 
+      "delete": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "405": {
+            "description": "Not Acceptable", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "data"
+        ], 
+        "description": "", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }
+        ], 
+        "summary": "\u5220\u9664\u6570\u636e"
+      }, 
+      "get": {
+        "description": "\u7528\u6765\u4ece\u5de5\u5177\u4e2d\u5bfc\u51fa\u5df2\u6807\u6ce8\u7684\u6570\u636e\uff0c\u5f53\u524d\u6570\u636e\u683c\u5f0f\u4e0e\u4e0a\u4f20\u7684\u6570\u636e\u76f8\u540c", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }
+        ], 
+        "tags": [
+          "data"
+        ], 
+        "produces": [
+          "multipart/form-data"
+        ], 
+        "summary": "\u4e0b\u8f7d\u6570\u636e", 
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "type": "file"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }
+      }
+    }, 
+    "/menus": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/MenuResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "menu"
+        ], 
+        "description": "", 
+        "summary": "\u83b7\u53d6\u64cd\u4f5c\u5217\u8868"
+      }
+    }, 
+    "/datas": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/DataListResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "data"
+        ], 
+        "description": "\u7528\u6765\u5c55\u793a\u5df2\u7ecf\u52a0\u8f7d\u5230\u5de5\u5177\u4e2d\u7684\u6570\u636e\uff0c\u5f53\u524d\u4e3b\u8981\u5c55\u793a\u7684\u5b57\u6bb5\u4e3a\u6570\u636e\u7684\u540d\u79f0\uff0c\u540e\u7eed\u9700\u8981\u5305\u542b\u6570\u636e\u7684 meta \u4fe1\u606f", 
+        "parameters": [
+          {
+            "type": "string", 
+            "description": "\u6570\u636e\u540d\u79f0\u5339\u914d\u89c4\u5219", 
+            "name": "pattern", 
+            "in": "query"
+          }
+        ], 
+        "summary": "\u83b7\u53d6\u6570\u636e\u5217\u8868"
+      }
+    }, 
+    "/data/{dataName}/thumb": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK", 
+            "schema": {
+              "$ref": "#/definitions/ThumbResponse"
+            }
+          }, 
+          "404": {
+            "description": "Not Found", 
+            "schema": {
+              "$ref": "#/definitions/CommonResponse"
+            }
+          }
+        }, 
+        "tags": [
+          "trend"
+        ], 
+        "description": "\u7528\u6765\u83b7\u53d6\u6570\u636e\u7684\u7f29\u7565\u56fe", 
+        "parameters": [
+          {
+            "$ref": "#/parameters/dataName"
+          }
+        ], 
+        "summary": "\u83b7\u53d6\u7f29\u7565\u56fe"
+      }
+    }
+  }, 
+  "parameters": {
+    "startTime": {
+      "description": "\u5f00\u59cb\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
+      "format": "int64", 
+      "required": true, 
+      "in": "query", 
+      "type": "integer", 
+      "name": "startTime"
+    }, 
+    "label": {
+      "enum": [
+        0, 
+        1, 
+        -1
+      ], 
+      "description": "\u6807\u6ce8\u7c7b\u578b", 
+      "format": "int64", 
+      "required": true, 
+      "in": "query", 
+      "type": "integer", 
+      "name": "label"
+    }, 
+    "dataName": {
+      "required": true, 
+      "type": "string", 
+      "description": "\u6570\u636e\u540d\u79f0", 
+      "in": "path", 
+      "name": "dataName"
+    }, 
+    "bandOrder": {
+      "description": "\u6392\u5e8f\u4f9d\u636e", 
+      "default": "time", 
+      "enum": [
+        "time", 
+        "reliablity"
+      ], 
+      "in": "query", 
+      "type": "string", 
+      "name": "order"
+    }, 
+    "file": {
+      "type": "file", 
+      "description": "\u539f\u59cb\u6570\u636e\u6587\u4ef6", 
+      "name": "file", 
+      "in": "formData"
+    }, 
+    "action": {
+      "enum": [
+        "foo"
+      ], 
+      "name": "action", 
+      "required": true, 
+      "in": "query", 
+      "type": "string", 
+      "description": "\u6570\u636e\u64cd\u4f5c\u540d\u79f0"
+    }, 
+    "endTime": {
+      "description": "\u7ed3\u675f\u65f6\u95f4(unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7)", 
+      "format": "int64", 
+      "required": true, 
+      "in": "query", 
+      "type": "integer", 
+      "name": "endTime"
+    }, 
+    "bandName": {
+      "required": true, 
+      "type": "string", 
+      "description": "band\u540d\u79f0", 
+      "in": "path", 
+      "name": "bandName"
+    }
+  }, 
+  "produces": [
+    "application/json"
+  ], 
+  "basePath": "/v1", 
+  "definitions": {
+    "Trend": {
+      "required": [
+        "name", 
+        "type", 
+        "data"
+      ], 
+      "properties": {
+        "data": {
+          "xml": {
+            "wrapped": true, 
+            "name": "point"
+          }, 
+          "items": {
+            "xml": {
+              "wrapped": true, 
+              "name": "value"
+            }, 
+            "minItems": 2, 
+            "type": "array", 
+            "maxItems": 3, 
+            "items": {
+              "type": "number"
+            }
+          }, 
+          "type": "array"
+        }, 
+        "type": {
+          "type": "string"
+        }, 
+        "name": {
+          "type": "string"
+        }
+      }
+    }, 
+    "DataMetaResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "$ref": "#/definitions/Meta"
+            }
+          }
+        }
+      ]
+    }, 
+    "DataListResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "xml": {
+                "wrapped": true, 
+                "name": "meta"
+              }, 
+              "items": {
+                "$ref": "#/definitions/Meta"
+              }, 
+              "type": "array"
+            }
+          }
+        }
+      ]
+    }, 
+    "TrendResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "required": [
+                "trends", 
+                "bands", 
+                "yAxis"
+              ], 
+              "properties": {
+                "bands": {
+                  "items": {
+                    "$ref": "#/definitions/BandCategory"
+                  }, 
+                  "type": "array"
+                }, 
+                "trends": {
+                  "items": {
+                    "$ref": "#/definitions/Trend"
+                  }, 
+                  "type": "array"
+                }, 
+                "yAxis": {
+                  "xml": {
+                    "wrapped": true, 
+                    "name": "value"
+                  }, 
+                  "minItems": 2, 
+                  "type": "array", 
+                  "maxItems": 2, 
+                  "items": {
+                    "type": "number", 
+                    "format": "float"
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    }, 
+    "BandResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "$ref": "#/definitions/BandItems"
+            }
+          }
+        }
+      ]
+    }, 
+    "Time": {
+      "type": "integer", 
+      "description": "unix\u65f6\u95f4\u6233\uff0c\u6beb\u79d2\u7ea7", 
+      "format": "int64"
+    }, 
+    "BandItems": {
+      "xml": {
+        "wrapped": true, 
+        "name": "band"
+      }, 
+      "items": {
+        "required": [
+          "bandNo", 
+          "bandCount", 
+          "currentTime", 
+          "reliablity"
+        ], 
+        "properties": {
+          "nextTime": {
+            "$ref": "#/definitions/TimeSlot"
+          }, 
+          "currentTime": {
+            "$ref": "#/definitions/BandTime"
+          }, 
+          "reliablity": {
+            "type": "number", 
+            "description": "\u63cf\u8ff0\u6240\u751f\u6210 band \u7684\u53ef\u4fe1\u7a0b\u5ea6", 
+            "format": "float"
+          }, 
+          "preTime": {
+            "$ref": "#/definitions/TimeSlot"
+          }, 
+          "bandNo": {
+            "type": "integer", 
+            "format": "int64"
+          }, 
+          "bandCount": {
+            "type": "integer", 
+            "format": "int64"
+          }
+        }
+      }, 
+      "type": "array"
+    }, 
+    "ThumbResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "$ref": "#/definitions/Trend"
+            }
+          }
+        }
+      ]
+    }, 
+    "MenuResponse": {
+      "required": [
+        "data"
+      ], 
+      "allOf": [
+        {
+          "$ref": "#/definitions/CommonResponse"
+        }, 
+        {
+          "properties": {
+            "data": {
+              "xml": {
+                "wrapped": true, 
+                "name": "menu"
+              }, 
+              "items": {
+                "$ref": "#/definitions/Action"
+              }, 
+              "type": "array"
+            }
+          }
+        }
+      ]
+    }, 
+    "CommonResponse": {
+      "required": [
+        "msg", 
+        "server", 
+        "traceId"
+      ], 
+      "description": "\u8fd4\u56de\u503c\u7684\u901a\u7528\u5b57\u6bb5", 
+      "properties": {
+        "msg": {
+          "type": "string"
+        }, 
+        "traceId": {
+          "type": "string"
+        }, 
+        "server": {
+          "type": "string"
+        }
+      }
+    }, 
+    "BandTime": {
+      "required": [
+        "duration", 
+        "show"
+      ], 
+      "properties": {
+        "duration": {
+          "$ref": "#/definitions/TimeSlot"
+        }, 
+        "show": {
+          "$ref": "#/definitions/TimeSlot"
+        }
+      }
+    }, 
+    "Meta": {
+      "required": [
+        "id", 
+        "name", 
+        "uri", 
+        "time", 
+        "period", 
+        "labelRatio"
+      ], 
+      "description": "\u6570\u636e\u7684\u5143\u4fe1\u606f", 
+      "properties": {
+        "updateTime": {
+          "$ref": "#/definitions/Time"
+        }, 
+        "name": {
+          "type": "string"
+        }, 
+        "uri": {
+          "type": "string", 
+          "description": "\u4e0b\u8f7d\u6570\u636e\u7684url"
+        }, 
+        "labelRatio": {
+          "type": "number", 
+          "description": "\u6807\u6ce8\u6570\u636e\u7684\u5360\u6bd4", 
+          "format": "float"
+        }, 
+        "createTime": {
+          "$ref": "#/definitions/Time"
+        }, 
+        "period": {
+          "required": [
+            "length", 
+            "ratio"
+          ], 
+          "description": "\u6570\u636e\u7684\u5468\u671f", 
+          "properties": {
+            "length": {
+              "type": "integer", 
+              "description": "\u6570\u636e\u7684\u5468\u671f\uff0c\u5355\u4f4d\uff1a\u79d2", 
+              "format": "int64"
+            }, 
+            "ratio": {
+              "type": "number", 
+              "description": "\u7b26\u5408\u5468\u671f\u7684\u6570\u636e\u5360\u6bd4", 
+              "format": "float"
+            }
+          }
+        }, 
+        "time": {
+          "$ref": "#/definitions/TimeSlot"
+        }, 
+        "id": {
+          "type": "integer", 
+          "format": "int64"
+        }
+      }
+    }, 
+    "TimeSlot": {
+      "required": [
+        "start", 
+        "end"
+      ], 
+      "description": "\u65f6\u95f4\u6bb5", 
+      "properties": {
+        "start": {
+          "$ref": "#/definitions/Time"
+        }, 
+        "end": {
+          "$ref": "#/definitions/Time"
+        }
+      }
+    }, 
+    "Action": {
+      "properties": {
+        "action": {
+          "enum": [
+            "foo"
+          ], 
+          "type": "string"
+        }, 
+        "name": {
+          "enum": [
+            "\u5360\u4f4d\u64cd\u4f5c"
+          ], 
+          "type": "string"
+        }
+      }
+    }, 
+    "BandCategory": {
+      "required": [
+        "name", 
+        "bands"
+      ], 
+      "properties": {
+        "bands": {
+          "$ref": "#/definitions/BandItems"
+        }, 
+        "name": {
+          "type": "string"
+        }
+      }
+    }
+  }, 
+  "swagger": "2.0", 
+  "consumes": [
+    "application/form-data"
+  ]
+}
