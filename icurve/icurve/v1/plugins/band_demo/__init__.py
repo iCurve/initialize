@@ -1,7 +1,7 @@
 # coding=utf-8
 def init_band(api):
     """
-    初始化 band
+    初始化 band，触发条件为数据上传
     :param api: 可调用的 api
     :return: (band_name, [(start_time, end_time)])
     """
@@ -16,4 +16,4 @@ def init_band(api):
     if len(abnormal_bands[-1]) == 1:
         abnormal_bands[-1].append(sorted(line)[-1][0])
 
-    return '5min滑动窗口 环比上涨5%', abnormal_bands
+    return '5min滑动窗口环比上涨5%', abnormal_bands

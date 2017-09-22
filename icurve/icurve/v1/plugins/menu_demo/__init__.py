@@ -3,7 +3,7 @@
 
 def menus():
     """
-    菜单项
+    菜单项，触发条件为获取菜单列表
     :return: [(action, menu_name)]
     """
     return [
@@ -13,7 +13,7 @@ def menus():
 
 def cancel_label(api, start_time, end_time):
     """
-    菜单项操作
+    菜单项操作，触发条件为点击对应的菜单项
     :func action: action in menus
     :param api: 可调用 api
     :param start_time: 开始时间

@@ -4,7 +4,7 @@ import math
 
 def sampling(api, line, amount):
     """
-    抽样样例
+    抽样样例，触发条件为趋势图加载，用于原始数据、参考线数据、参考区域的抽样
     :param api: 可调用的 api
     :param line: 曲线 [(timestamp, value...)]
     :param amount: 抽样后的点数
@@ -27,18 +27,26 @@ def sampling(api, line, amount):
     for point in line:
         tmp_value[point[0] / sample_period * sample_period].append(point[1:])
     result = []
+    is_line = True
+    if len(line[0]) > 2:
+        is_line = False
     for timestamp in sorted(tmp_value.keys()):
+        # 处理线条/区域下界
         value = [x[0] for x in tmp_value[timestamp] if x[0] is not None]
         if len(value) > 0:
             value = float(sum(value)/len(value))
         else:
             value = None
-        label = [x[1] for x in tmp_value[timestamp] if len(x) > 1 and x[1] is not None]
-        if len(label) > 0:
-            label = max(label)
+        if is_line:
+            result.append((timestamp, value))
+            continue
+        # 处理区域上界
+        upper = [x[1] for x in tmp_value[timestamp] if len(x) > 1 and x[1] is not None]
+        if len(upper) > 0:
+            upper = float(sum(upper)/len(upper))
         else:
-            label = api.LABEL_ENUM.normal
-        result.append([timestamp, value, label])
+            upper = None
+        result.append([timestamp, value, upper])
 
     return '抽样样例', result
 

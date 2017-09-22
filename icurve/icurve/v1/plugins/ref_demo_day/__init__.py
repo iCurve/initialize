@@ -1,9 +1,11 @@
 # coding=utf-8
+
+
 def reference(api, line):
     """
-    参考线样例
+    参考线样例，触发条件为趋势图加载
     :param api: 可调用的 api
-    :param line: [(timestamp, value...)]
+    :param line: 局部原始数据 [(timestamp, value...)]
     :return: [(timestamp, value)]
     """
     result = []

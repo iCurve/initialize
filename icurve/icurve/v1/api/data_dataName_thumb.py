@@ -19,9 +19,10 @@ class DataDatanameThumb(Resource):
         line = data_service.get_line()
 
         thumb_name, thumb = plugin.sampling(line, 1440)
+        thumb = s2ms(thumb)
 
         return self.render(data={
                 'name': thumb_name,
                 'type': 'line',
-                'data': s2ms(thumb)
+                'data': thumb
             }), 200, None

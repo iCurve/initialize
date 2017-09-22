@@ -32,25 +32,30 @@ class DataDatanameCurves(Resource):
 
         # 原始数据获取
         line = data_service.get_data(start_time, end_time)
-        _, line = plugin.sampling(line)
+
+        # 原始数据计算
+        raw_line = [point[:2] for point in line]
+        _, raw_line = plugin.sampling(raw_line)
+        raw_line = s2ms(raw_line)
 
         raw_line = {
             'name': '原始曲线',
             'type': 'line',
-            'data': s2ms([point[:2] for point in line])
+            'data': raw_line
         }
 
         # 标注曲线计算
-        label_line = []
-        for point in line:
-            if point[2] == LABEL_ENUM.abnormal:
-                label_line.append((point[:2]))
+        label_line = [(point[0], point[2]) for point in line]
+        _, label_line = plugin.sampling(label_line)
+        for key, point in enumerate(label_line):
+            if point[1] == LABEL_ENUM.abnormal:
+                label_line[key] = raw_line['data'][key]
             else:
-                label_line.append((point[0], None))
+                label_line[key] = (raw_line['data'][key][0], None)
         label_line = {
             'name': '标注曲线',
             'type': 'line',
-            'data': s2ms(label_line)
+            'data': label_line
         }
 
         y_axis = [float('inf'), float('-inf')]

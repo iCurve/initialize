@@ -55,6 +55,17 @@ class API(object):
         """
         return self.data_service.set_label(start_time, end_time, label)
 
+    def set_band(self, band_name, start_time, end_time, reliablity):
+        """
+        添加 band
+        :param band_name: band 名称
+        :param start_time: 开始时间
+        :param end_time: 结束时间
+        :param reliablity: 置信度
+        :return:
+        """
+        return self.data_service.set_band(band_name, start_time, end_time, reliablity)
+
 
 class PluginManager(object):
 
